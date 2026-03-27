@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
+import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiState
 import com.valdesekamdem.taskflow.ui.theme.Spacing
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
@@ -16,6 +17,7 @@ import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 @Composable
 fun Home(
     uiState: HomeUiState,
+    onUiEvent: (HomeUiEvent) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -28,7 +30,7 @@ fun Home(
         ) { task ->
             TaskCard(
                 task = task,
-                onClick = { /*TODO()*/ }
+                onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) }
             )
         }
     }
@@ -38,6 +40,6 @@ fun Home(
 @Composable
 fun HomePreview() {
     TaskflowTheme {
-        Home(uiState = HomeFixtures.homeUiState)
+        Home(uiState = HomeFixtures.homeUiState, onUiEvent = {})
     }
 }
