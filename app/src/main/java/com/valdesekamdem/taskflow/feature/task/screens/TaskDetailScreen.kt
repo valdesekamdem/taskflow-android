@@ -4,7 +4,7 @@ import com.valdesekamdem.taskflow.core.navigation.api.Screen
 import kotlinx.serialization.Serializable
 
 @Serializable
-class TaskDetailScreen(
+data class TaskDetailScreen(
     val id: String,
     val title: String,
 ) : Screen
