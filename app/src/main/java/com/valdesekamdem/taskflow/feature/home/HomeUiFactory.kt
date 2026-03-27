@@ -16,8 +16,8 @@ class HomeUiFactory @Inject constructor() : UiFactory {
         entry<HomeScreen> { _ ->
             BindScreen(
                 stateHolder = hiltViewModel<HomeViewModel>()
-            ) { _, _ ->
-                Home()
+            ) { uiState, _ ->
+                Home(uiState = uiState)
             }
         }
     }

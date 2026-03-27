@@ -22,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
 import com.valdesekamdem.taskflow.feature.home.viewmodel.TaskUiModel
 import com.valdesekamdem.taskflow.ui.components.CategoryBadge
-import com.valdesekamdem.taskflow.ui.components.Priority
 import com.valdesekamdem.taskflow.ui.components.PriorityBadge
 import com.valdesekamdem.taskflow.ui.theme.Rounded
 import com.valdesekamdem.taskflow.ui.theme.Spacing
@@ -96,14 +96,7 @@ fun TaskCard(
 fun TaskCardPreview() {
     TaskflowTheme {
         TaskCard(
-            task = TaskUiModel(
-                id = "task-3",
-                title = "Review sprint retro notes",
-                description = "Pull action items into the next planning session.",
-                priority = Priority.Low,
-                category = "Planning",
-                dueDateText = "Due Apr 1",
-            ),
+            task = HomeFixtures.tasks.first(),
             onClick = {}
         )
     }
