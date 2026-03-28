@@ -16,7 +16,8 @@ class HomeViewModelTest {
     @Test
     fun `TaskClicked event navigates to TaskDetailScreen`() = runTest {
         viewModel.test {
-            assertEquals(HomeUiState(HomeFixtures.tasks), uiState.value)
+            val expected = HomeUiState(todayDate = "March 28", tasks = HomeFixtures.tasks)
+            assertEquals(expected, uiState.value)
 
             val task = HomeFixtures.tasks.first().copy(
                 id = "task-id",

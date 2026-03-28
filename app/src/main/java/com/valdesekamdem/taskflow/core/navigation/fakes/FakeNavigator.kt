@@ -10,8 +10,4 @@ class FakeNavigator : Navigator {
     override fun goTo(screen: Screen) {
         screens.add(screen)
     }
-
-    override fun getBack() {
-        TODO("Not yet implemented")
-    }
 }

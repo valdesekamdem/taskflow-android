@@ -14,6 +14,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.navigation.real.NavigationEvent
 import com.valdesekamdem.taskflow.core.navigation.real.NavigationEventSource
@@ -77,7 +78,7 @@ fun Main(
 ) {
     NavDisplay(
         backStack = backStack,
-        onBack = { navigator.getBack() },
+        onBack = { navigator.goTo(Back) },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()

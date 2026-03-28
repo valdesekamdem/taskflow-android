@@ -1,5 +1,6 @@
 package com.valdesekamdem.taskflow.core.navigation.real
 
+import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.navigation.api.Screen
 import kotlinx.coroutines.channels.Channel
@@ -14,14 +15,14 @@ class RealNavigator @Inject constructor(): Navigator, NavigationEventSource {
     override val events: Flow<NavigationEvent> = eventChannel.receiveAsFlow()
 
     override fun goTo(screen: Screen) {
-        check(eventChannel.trySend(NavigationEvent.NavigateTo(screen)).isSuccess) {
-            "Failed to enqueue navigation command: NavigateTo($screen)"
+        val event = if (screen is Back) {
+            NavigationEvent.Back
+        } else {
+            NavigationEvent.NavigateTo(screen)
         }
-    }
 
-    override fun getBack() {
-        check(eventChannel.trySend(NavigationEvent.Back).isSuccess) {
-            "Failed to enqueue navigation command: Back"
+        check(eventChannel.trySend(event).isSuccess) {
+            "Failed to enqueue navigation command: NavigateTo($screen)"
         }
     }
 }

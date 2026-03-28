@@ -2,6 +2,7 @@ package com.valdesekamdem.taskflow.feature.task.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
@@ -35,7 +36,7 @@ class EditTaskViewModel @Inject constructor(
 
     override fun onUiEvent(event: EditTaskUiEvent) {
         when (event) {
-            BackClicked -> navigator.getBack()
+            BackClicked -> navigator.goTo(Back)
             is TitleChanged -> reduce {
                 copy(
                     form = form.copy(title = event.title),
@@ -69,7 +70,7 @@ class EditTaskViewModel @Inject constructor(
             taskRepository.addTask(taskModel)
 
             reduce { copy(isSubmitting = false) }
-            navigator.getBack()
+            navigator.goTo(Back)
         }
     }
 
