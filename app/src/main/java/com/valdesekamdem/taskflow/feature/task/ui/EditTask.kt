@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState
+import com.valdesekamdem.taskflow.ui.components.topappbar.NavigationType
+import com.valdesekamdem.taskflow.ui.components.topappbar.TitleTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.Spacing
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 
@@ -33,18 +36,29 @@ fun EditTask(
     uiState: EditTaskUiState,
     onUiEvent: (EditTaskUiEvent) -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(Spacing.medium)
-    ) {
-        EditTaskFormContent(
-            form = uiState.form,
-            onTitleChanged = { onUiEvent(EditTaskUiEvent.OnTitleChanged(it)) },
-            onDescriptionChanged = { onUiEvent(EditTaskUiEvent.OnDescriptionChanged(it)) },
-            onSubmit = { onUiEvent(EditTaskUiEvent.OnSubmit) },
-            isSubmitting = uiState.isSubmitting,
-        )
+    Scaffold(
+        topBar = {
+            TitleTopAppBar(
+                title = uiState.title,
+                navigationType = NavigationType.CLOSE,
+                onNavigationClicked = { onUiEvent(EditTaskUiEvent.BackClicked) },
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            EditTaskFormContent(
+                form = uiState.form,
+                onTitleChanged = { onUiEvent(EditTaskUiEvent.OnTitleChanged(it)) },
+                onDescriptionChanged = { onUiEvent(EditTaskUiEvent.OnDescriptionChanged(it)) },
+                onSubmit = { onUiEvent(EditTaskUiEvent.OnSubmit) },
+                isSubmitting = uiState.isSubmitting,
+                modifier = Modifier.padding(horizontal = Spacing.medium),
+            )
+        }
     }
 }
 
@@ -109,15 +123,14 @@ fun EditTaskFormContent(
 
 @Preview(showBackground = true)
 @Composable
-fun EditTaskFormPreview() {
+fun EditTaskPreview() {
     TaskflowTheme {
-        EditTaskFormContent(
-            form = EditTaskUiState.EditTaskForm(),
-            onTitleChanged = {},
-            onDescriptionChanged = {},
-            onSubmit = {},
-            isSubmitting = false,
-            modifier = Modifier.padding(Spacing.medium)
+        EditTask(
+            uiState = EditTaskUiState(
+                title = "New task",
+                form = EditTaskUiState.EditTaskForm(),
+            ),
+            onUiEvent = {}
         )
     }
 }

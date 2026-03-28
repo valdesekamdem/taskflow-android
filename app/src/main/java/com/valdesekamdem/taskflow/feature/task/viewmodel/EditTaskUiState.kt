@@ -1,6 +1,7 @@
 package com.valdesekamdem.taskflow.feature.task.viewmodel
 
 data class EditTaskUiState(
+    val title: String,
     val form: EditTaskForm,
     val isSubmitting: Boolean = false,
 ) {
