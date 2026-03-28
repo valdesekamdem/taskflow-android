@@ -105,7 +105,7 @@ fun EditTaskFormContent(
 
         Button(
             onClick = onSubmit,
-            enabled = !isSubmitting,
+            enabled = form.isFormValid && !isSubmitting,
             modifier = Modifier.fillMaxWidth(),
         ) {
             if (isSubmitting) {

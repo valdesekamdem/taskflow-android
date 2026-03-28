@@ -9,6 +9,8 @@ import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState.EditTas
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EditTaskViewModelTest {
@@ -31,13 +33,22 @@ class EditTaskViewModelTest {
     @Test
     fun `form is updated when received text fields events`() = runTest {
         viewModel.uiState.test {
-            assertEquals(EditTaskForm(), awaitItem().form)
+            with(awaitItem().form) {
+                assertEquals(EditTaskForm(), this)
+                assertFalse(this.isFormValid)
+            }
 
             viewModel.onUiEvent(EditTaskUiEvent.TitleChanged("Call J"))
-            assertEquals(EditTaskForm("Call J"), awaitItem().form)
+            with(awaitItem().form) {
+                assertEquals(EditTaskForm("Call J"), this)
+                assertTrue(this.isFormValid)
+            }
 
             viewModel.onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
-            assertEquals(EditTaskForm(title = "Call J", description = "Desc"), awaitItem().form)
+            with(awaitItem().form) {
+                assertEquals(EditTaskForm(title = "Call J", description = "Desc"), this)
+                assertTrue(this.isFormValid)
+            }
         }
     }
 
@@ -52,4 +63,17 @@ class EditTaskViewModelTest {
             assertEquals(expectedTaskModel, taskRepository.addTaskCalls.awaitItem())
         }
     }
+
+    @Test
+    fun `viewmodel throw exception when submitting form with empty title task repository on submit`() =
+        runTest {
+            viewModel.test {
+                viewModel.onUiEvent(EditTaskUiEvent.TitleChanged("Call KKV tomorrow"))
+                viewModel.onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
+
+                onUiEvent(EditTaskUiEvent.SubmitForm)
+                val expectedTaskModel = TaskModel(title = "Call KKV tomorrow", description = "Desc")
+                assertEquals(expectedTaskModel, taskRepository.addTaskCalls.awaitItem())
+            }
+        }
 }

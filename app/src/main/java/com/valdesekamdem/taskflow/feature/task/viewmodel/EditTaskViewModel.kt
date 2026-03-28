@@ -56,9 +56,6 @@ class EditTaskViewModel @Inject constructor(
     private fun handleSubmit() {
         val currentForm = _uiState.value.form
         val (title, description) = currentForm
-        check(title.isNotBlank()) { // FIXME(valdese): Handle validate for required fields
-            "Title is required"
-        }
 
         reduce { copy(isSubmitting = true) }
         val taskModel = TaskModel(

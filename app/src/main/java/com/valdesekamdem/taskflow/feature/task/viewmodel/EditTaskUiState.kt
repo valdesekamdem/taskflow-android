@@ -11,5 +11,8 @@ data class EditTaskUiState(
 //        val priority: Priority,
 //        val dueDate: Date,
 //        val category: String,
-    )
+    ) {
+        val isFormValid: Boolean
+            get() = title.isNotEmpty()
+    }
 }
