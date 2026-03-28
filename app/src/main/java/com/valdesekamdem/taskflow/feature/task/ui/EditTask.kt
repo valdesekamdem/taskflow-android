@@ -52,9 +52,9 @@ fun EditTask(
         ) {
             EditTaskFormContent(
                 form = uiState.form,
-                onTitleChanged = { onUiEvent(EditTaskUiEvent.OnTitleChanged(it)) },
-                onDescriptionChanged = { onUiEvent(EditTaskUiEvent.OnDescriptionChanged(it)) },
-                onSubmit = { onUiEvent(EditTaskUiEvent.OnSubmit) },
+                onTitleChanged = { onUiEvent(EditTaskUiEvent.TitleChanged(it)) },
+                onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
+                onSubmit = { onUiEvent(EditTaskUiEvent.SubmitForm) },
                 isSubmitting = uiState.isSubmitting,
                 modifier = Modifier.padding(horizontal = Spacing.medium),
             )
