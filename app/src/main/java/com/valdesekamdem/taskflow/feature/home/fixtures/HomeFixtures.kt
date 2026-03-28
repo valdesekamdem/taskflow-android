@@ -32,5 +32,5 @@ object HomeFixtures {
         ),
     )
 
-    val homeUiState = HomeUiState(tasks = tasks)
+    val homeUiState = HomeUiState(todayDate = "March 28", tasks = tasks)
 }

@@ -17,7 +17,12 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val navigator: Navigator,
 ) : ViewModel(), StateHolder<HomeUiState, HomeUiEvent> {
-    override val uiState: StateFlow<HomeUiState> = MutableStateFlow(HomeUiState(HomeFixtures.tasks))
+    override val uiState: StateFlow<HomeUiState> = MutableStateFlow(
+        HomeUiState(
+            todayDate = "March 28",
+            tasks = HomeFixtures.tasks,
+        )
+    )
 
     override fun onUiEvent(event: HomeUiEvent) = when (event) {
         is TaskClicked -> navigator.goTo(

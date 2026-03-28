@@ -3,6 +3,7 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 import com.valdesekamdem.taskflow.ui.components.Priority
 
 data class HomeUiState(
+    val todayDate: String,
     val tasks: List<TaskUiModel> = emptyList(),
 )
 

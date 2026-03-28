@@ -4,9 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -23,8 +20,8 @@ import com.valdesekamdem.taskflow.core.navigation.real.NavigationEventSource
 import com.valdesekamdem.taskflow.core.presentation.UiFactory
 import com.valdesekamdem.taskflow.feature.home.screens.HomeScreen
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
-import javax.inject.Inject
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -46,14 +43,11 @@ class MainActivity : ComponentActivity() {
             BindNavigator(navigationEventSource = navigationEventSource, backStack = backStack)
 
             TaskflowTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Main(
-                        backStack = backStack,
-                        navigator = navigator,
-                        uiFactories = uiFactories,
-                        modifier = Modifier.padding(innerPadding),
-                    )
-                }
+                Main(
+                    backStack = backStack,
+                    navigator = navigator,
+                    uiFactories = uiFactories,
+                )
             }
         }
     }
