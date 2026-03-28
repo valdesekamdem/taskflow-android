@@ -7,7 +7,7 @@ import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
-import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.BackClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.CloseClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.DescriptionChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.SubmitForm
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.TitleChanged
@@ -36,7 +36,7 @@ class EditTaskViewModel @Inject constructor(
 
     override fun onUiEvent(event: EditTaskUiEvent) {
         when (event) {
-            BackClicked -> navigator.goTo(Back)
+            CloseClicked -> navigator.goTo(Back)
             is TitleChanged -> reduce {
                 copy(
                     form = form.copy(title = event.title),

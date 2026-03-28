@@ -41,7 +41,7 @@ fun EditTask(
             TitleTopAppBar(
                 title = uiState.title,
                 navigationType = NavigationType.CLOSE,
-                onNavigationClicked = { onUiEvent(EditTaskUiEvent.BackClicked) },
+                onNavigationClicked = { onUiEvent(EditTaskUiEvent.CloseClicked) },
             )
         }
     ) { innerPadding ->
