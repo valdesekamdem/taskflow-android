@@ -2,6 +2,7 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
+import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
@@ -24,6 +25,14 @@ class HomeViewModelTest {
             onUiEvent(HomeUiEvent.TaskClicked(task))
 
             assertEquals(TaskDetailScreen(task.id, task.title), navigator.screens.awaitItem())
+        }
+    }
+
+    @Test
+    fun `NewTaskClicked event navigate EditTaskScreen`() = runTest {
+        viewModel.test {
+            onUiEvent(HomeUiEvent.NewTaskClicked)
+            assertEquals(EditTaskScreen(null), navigator.screens.awaitItem())
         }
     }
 }

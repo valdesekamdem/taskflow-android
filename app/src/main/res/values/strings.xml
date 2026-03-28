@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">taskflow</string>
+    <string name="add_new_task_button_description">Add a new task</string>
 </resources>
