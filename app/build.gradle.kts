@@ -44,6 +44,7 @@ android {
 
 dependencies {
     ksp(libs.hilt.android.compiler)
+    ksp(libs.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -59,6 +60,8 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.turbine)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.coroutines.test)

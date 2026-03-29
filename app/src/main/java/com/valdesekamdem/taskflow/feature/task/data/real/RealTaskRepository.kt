@@ -1,17 +1,40 @@
 package com.valdesekamdem.taskflow.feature.task.data.real
 
-import android.util.Log
+import com.valdesekamdem.taskflow.core.database.dao.TaskDao
+import com.valdesekamdem.taskflow.core.database.model.TaskEntity
+import com.valdesekamdem.taskflow.core.model.Category
+import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Clock
 
 @Singleton
-class RealTaskRepository @Inject constructor() : TaskRepository {
+class RealTaskRepository @Inject constructor(
+    private val taskDao: TaskDao,
+) : TaskRepository {
 
-    override suspend fun addTask(taskModel: TaskModel) {
-        Log.d(this.javaClass.simpleName, taskModel.toString())
-        delay(200) // Temporary: Simulate saving operation
+    override suspend fun addTask(taskModel: TaskModel) =
+        withContext(Dispatchers.IO) { // FIXME(valdese): Inject the context to facilitate testing
+            val now =
+                Clock.System.now() // FIXME(valdese): Inject the clock object to facilitate testing
+            val taskEntity = TaskEntity(
+                id = null,
+                title = taskModel.title,
+                description = taskModel.description,
+                priority = Priority.Low,
+                category = Category.Personal,
+                dueDate = null,
+                reminder = null,
+                isCompleted = false,
+                createdAt = now,
+                updatedAt = null,
+                notes = null,
+            )
+
+            taskDao.insertAll(taskEntity)
     }
 }
