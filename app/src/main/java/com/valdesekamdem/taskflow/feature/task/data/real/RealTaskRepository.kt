@@ -2,11 +2,15 @@ package com.valdesekamdem.taskflow.feature.task.data.real
 
 import com.valdesekamdem.taskflow.core.database.dao.TaskDao
 import com.valdesekamdem.taskflow.core.database.model.TaskEntity
+import com.valdesekamdem.taskflow.core.database.model.toTask
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
+import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,5 +40,11 @@ class RealTaskRepository @Inject constructor(
             )
 
             taskDao.insertAll(taskEntity)
+    }
+
+    override fun getTasks(): Flow<List<Task>> {
+        return taskDao.getAll().map { taskEntities ->
+            taskEntities.map { it.toTask() }
+        }
     }
 }

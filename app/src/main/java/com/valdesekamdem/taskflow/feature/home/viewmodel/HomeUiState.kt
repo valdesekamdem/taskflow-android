@@ -1,6 +1,6 @@
 package com.valdesekamdem.taskflow.feature.home.viewmodel
 
-import com.valdesekamdem.taskflow.ui.components.Priority
+import com.valdesekamdem.taskflow.core.model.Priority
 
 data class HomeUiState(
     val todayDate: String,

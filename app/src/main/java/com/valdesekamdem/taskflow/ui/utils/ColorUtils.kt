@@ -1,7 +1,7 @@
 package com.valdesekamdem.taskflow.ui.utils
 
 import androidx.compose.ui.graphics.Color
-import com.valdesekamdem.taskflow.ui.components.Priority
+import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.ui.theme.PriorityHigh
 import com.valdesekamdem.taskflow.ui.theme.PriorityLow
 import com.valdesekamdem.taskflow.ui.theme.PriorityMedium

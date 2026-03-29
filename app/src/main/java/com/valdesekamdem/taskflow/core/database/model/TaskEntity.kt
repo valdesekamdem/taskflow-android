@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
+import com.valdesekamdem.taskflow.core.model.Task
 import kotlin.time.Instant
 
 @Entity(tableName = "tasks")
@@ -20,4 +21,18 @@ data class TaskEntity(
     @ColumnInfo(name = "created_at") val createdAt: Instant,
     @ColumnInfo(name = "updated_at") val updatedAt: Instant?,
     val notes: String?,
+)
+
+fun TaskEntity.toTask() = Task(
+    id = id!!,
+    title = title,
+    description = description,
+    priority = priority,
+    category = category,
+    dueDate = dueDate,
+    reminder = reminder,
+    isCompleted = isCompleted,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    notes = notes,
 )

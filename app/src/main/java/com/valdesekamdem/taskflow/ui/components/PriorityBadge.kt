@@ -3,11 +3,8 @@ package com.valdesekamdem.taskflow.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.ui.utils.accentColor
-
-enum class Priority {
-    Low, Medium, High
-}
 
 const val alpha = .2f
 

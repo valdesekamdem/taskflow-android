@@ -1,8 +1,8 @@
 package com.valdesekamdem.taskflow.feature.home.fixtures
 
+import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiState
 import com.valdesekamdem.taskflow.feature.home.viewmodel.TaskUiModel
-import com.valdesekamdem.taskflow.ui.components.Priority
 
 object HomeFixtures {
     val tasks = listOf(

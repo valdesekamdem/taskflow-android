@@ -42,6 +42,12 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+}
+
 dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.room.compiler)
