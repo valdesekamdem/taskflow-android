@@ -1,5 +1,6 @@
 package com.valdesekamdem.taskflow.ui.components.topappbar
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -37,8 +37,7 @@ fun LevelOneTopAppBar(
                 surtitle?.run {
                     Text(
                         text = surtitle,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = LocalTextStyle.current.color.copy(.6f)
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
                 Text(
@@ -72,6 +71,7 @@ fun TopAppBarPreview() {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TopAppBarWithSurtitlePreview() {
     TaskflowTheme {
