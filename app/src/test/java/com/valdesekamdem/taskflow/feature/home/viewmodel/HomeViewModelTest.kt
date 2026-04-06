@@ -2,6 +2,7 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
+import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.utils.test
@@ -11,13 +12,13 @@ import org.junit.Test
 
 class HomeViewModelTest {
     private val navigator = FakeNavigator()
-    private val viewModel = HomeViewModel(navigator)
+    private val taskRepository = FakeTaskRepository()
+    private val viewModel = HomeViewModel(navigator, taskRepository)
 
     @Test
     fun `TaskClicked event navigates to TaskDetailScreen`() = runTest {
         viewModel.test {
-            val expected = HomeUiState(todayDate = "March 28", tasks = HomeFixtures.tasks)
-            assertEquals(expected, uiState.value)
+            assertEquals(HomeUiState(todayDate = "March 28"), uiState.value)
 
             val task = HomeFixtures.tasks.first().copy(
                 id = "task-id",

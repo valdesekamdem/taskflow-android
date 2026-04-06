@@ -55,25 +55,16 @@ class EditTaskViewModelTest {
     @Test
     fun `viewmodel passes data to the task repository on submit`() = runTest {
         viewModel.test {
-            viewModel.onUiEvent(EditTaskUiEvent.TitleChanged("Call KKV tomorrow"))
-            viewModel.onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
+            onUiEvent(EditTaskUiEvent.TitleChanged("Call KKV tomorrow"))
+            onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
 
             onUiEvent(EditTaskUiEvent.SubmitForm)
+            assertTrue(uiState.value.isSubmitting)
             val expectedTaskModel = TaskModel(title = "Call KKV tomorrow", description = "Desc")
             assertEquals(expectedTaskModel, taskRepository.addTaskCalls.awaitItem())
+
+            assertFalse(uiState.value.isSubmitting)
+            assertEquals(Back, navigator.screens.awaitItem())
         }
     }
-
-    @Test
-    fun `viewmodel throw exception when submitting form with empty title task repository on submit`() =
-        runTest {
-            viewModel.test {
-                viewModel.onUiEvent(EditTaskUiEvent.TitleChanged("Call KKV tomorrow"))
-                viewModel.onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
-
-                onUiEvent(EditTaskUiEvent.SubmitForm)
-                val expectedTaskModel = TaskModel(title = "Call KKV tomorrow", description = "Desc")
-                assertEquals(expectedTaskModel, taskRepository.addTaskCalls.awaitItem())
-            }
-        }
 }
