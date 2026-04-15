@@ -34,6 +34,7 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -51,6 +52,8 @@ kotlin {
 dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.room.compiler)
+
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

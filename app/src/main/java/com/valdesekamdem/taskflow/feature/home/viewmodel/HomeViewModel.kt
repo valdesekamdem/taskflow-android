@@ -1,6 +1,7 @@
 package com.valdesekamdem.taskflow.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.valdesekamdem.taskflow.core.clock.utils.toMonthDay
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
@@ -14,17 +15,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import java.time.ZoneId
 import javax.inject.Inject
+import kotlin.time.Clock
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val navigator: Navigator,
     private val taskRepository: TaskRepository,
+    clock: Clock,
+    zoneId: ZoneId,
 ) : ViewModel(), StateHolder<HomeUiState, HomeUiEvent> {
 
     private val _uiState = MutableStateFlow(
         HomeUiState(
-            todayDate = "March 28",
+            todayDate = clock.now().toMonthDay(zoneId),
             tasks = emptyList(),
         )
     )

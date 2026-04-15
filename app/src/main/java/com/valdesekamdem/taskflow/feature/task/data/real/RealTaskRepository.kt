@@ -19,12 +19,11 @@ import kotlin.time.Clock
 @Singleton
 class RealTaskRepository @Inject constructor(
     private val taskDao: TaskDao,
+    private val clock: Clock,
 ) : TaskRepository {
 
     override suspend fun addTask(taskModel: TaskModel) =
         withContext(Dispatchers.IO) { // FIXME(valdese): Inject the context to facilitate testing
-            val now =
-                Clock.System.now() // FIXME(valdese): Inject the clock object to facilitate testing
             val taskEntity = TaskEntity(
                 id = null,
                 title = taskModel.title,
@@ -34,7 +33,7 @@ class RealTaskRepository @Inject constructor(
                 dueDate = null,
                 reminder = null,
                 isCompleted = false,
-                createdAt = now,
+                createdAt = clock.now(),
                 updatedAt = null,
                 notes = null,
             )
