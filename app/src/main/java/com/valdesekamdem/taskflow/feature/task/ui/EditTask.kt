@@ -60,10 +60,28 @@ fun EditTask(
                 onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
                 onCategoryChanged = { onUiEvent(EditTaskUiEvent.CategoryChanged(it)) },
                 onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
-                onSubmit = { onUiEvent(EditTaskUiEvent.SubmitForm) },
-                isSubmitting = uiState.isSubmitting,
-                modifier = Modifier.padding(horizontal = Spacing.medium),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = Spacing.medium),
             )
+
+            Button(
+                onClick = { onUiEvent(EditTaskUiEvent.SubmitForm) },
+                enabled = uiState.form.isFormValid && !uiState.isSubmitting,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Spacing.medium),
+            ) {
+                if (uiState.isSubmitting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(Modifier.size(Spacing.small))
+                }
+                Text("Save")
+            }
         }
     }
 }
@@ -75,16 +93,12 @@ fun EditTaskFormContent(
     onDescriptionChanged: (String) -> Unit,
     onCategoryChanged: (Category) -> Unit,
     onPriorityChanged: (Priority) -> Unit,
-    onSubmit: () -> Unit,
-    isSubmitting: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState),
+        modifier = modifier.verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(Spacing.medium)
     ) {
         OutlinedTextField(
@@ -135,22 +149,6 @@ fun EditTaskFormContent(
                     )
                 }
             }
-        }
-
-        Button(
-            onClick = onSubmit,
-            enabled = form.isFormValid && !isSubmitting,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            if (isSubmitting) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Spacer(Modifier.size(Spacing.small))
-            }
-            Text("Save")
         }
     }
 }
