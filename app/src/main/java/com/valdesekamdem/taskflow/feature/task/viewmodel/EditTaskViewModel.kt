@@ -7,6 +7,7 @@ import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.CategoryChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.CloseClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.DescriptionChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.PriorityChanged
@@ -50,6 +51,12 @@ class EditTaskViewModel @Inject constructor(
                 )
             }
 
+            is CategoryChanged -> reduce {
+                copy(
+                    form = form.copy(category = event.category)
+                )
+            }
+
             is PriorityChanged -> _uiState.update {
                 it.copy(
                     form = it.form.copy(priority = event.priority)
@@ -62,12 +69,13 @@ class EditTaskViewModel @Inject constructor(
 
     private fun handleSubmit() {
         val currentForm = _uiState.value.form
-        val (title, description, priority) = currentForm
+        val (title, description, category, priority) = currentForm
 
         reduce { copy(isSubmitting = true) }
         val taskModel = TaskModel(
             title = title,
             description = description,
+            category = category,
             priority = priority,
         )
 

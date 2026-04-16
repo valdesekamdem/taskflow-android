@@ -1,5 +1,6 @@
 package com.valdesekamdem.taskflow.feature.task.viewmodel
 
+import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 
 data class EditTaskUiState(
@@ -10,9 +11,9 @@ data class EditTaskUiState(
     data class EditTaskForm(
         val title: String = "",
         val description: String = "",
+        val category: Category = Category.Personal,
         val priority: Priority = Priority.Low,
 //        val dueDate: Date,
-//        val category: String,
     ) {
         val isFormValid: Boolean
             get() = title.isNotEmpty()

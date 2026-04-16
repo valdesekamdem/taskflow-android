@@ -25,10 +25,12 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState
 import com.valdesekamdem.taskflow.ui.components.PriorityCard
+import com.valdesekamdem.taskflow.ui.components.SelectCategoryTextField
 import com.valdesekamdem.taskflow.ui.components.topappbar.NavigationType
 import com.valdesekamdem.taskflow.ui.components.topappbar.TitleTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.Spacing
@@ -57,6 +59,7 @@ fun EditTask(
                 form = uiState.form,
                 onTitleChanged = { onUiEvent(EditTaskUiEvent.TitleChanged(it)) },
                 onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
+                onCategoryChanged = { onUiEvent(EditTaskUiEvent.CategoryChanged(it)) },
                 onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
                 onSubmit = { onUiEvent(EditTaskUiEvent.SubmitForm) },
                 isSubmitting = uiState.isSubmitting,
@@ -71,6 +74,7 @@ fun EditTaskFormContent(
     form: EditTaskUiState.EditTaskForm,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
+    onCategoryChanged: (Category) -> Unit,
     onPriorityChanged: (Priority) -> Unit,
     onSubmit: () -> Unit,
     isSubmitting: Boolean,
@@ -105,6 +109,13 @@ fun EditTaskFormContent(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        SelectCategoryTextField(
+            selectedCategory = form.category,
+            label = "Category",
+            onChanged = onCategoryChanged,
             modifier = Modifier.fillMaxWidth()
         )
 

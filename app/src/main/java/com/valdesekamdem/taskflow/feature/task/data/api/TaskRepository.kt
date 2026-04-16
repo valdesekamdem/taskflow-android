@@ -1,5 +1,6 @@
 package com.valdesekamdem.taskflow.feature.task.data.api
 
+import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
 import kotlinx.coroutines.flow.Flow
@@ -13,5 +14,6 @@ interface TaskRepository {
 data class TaskModel(
     val title: String,
     val description: String,
+    val category: Category,
     val priority: Priority,
 )
