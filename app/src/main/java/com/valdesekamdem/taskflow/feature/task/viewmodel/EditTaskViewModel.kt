@@ -39,29 +39,14 @@ class EditTaskViewModel @Inject constructor(
     override fun onUiEvent(event: EditTaskUiEvent) {
         when (event) {
             CloseClicked -> navigator.goTo(Back)
-            is TitleChanged -> reduce {
-                copy(
-                    form = form.copy(title = event.title),
-                )
-            }
 
-            is DescriptionChanged -> _uiState.update {
-                it.copy(
-                    form = it.form.copy(description = event.description)
-                )
-            }
+            is TitleChanged -> reduce { copy(form = form.copy(title = event.title)) }
 
-            is CategoryChanged -> reduce {
-                copy(
-                    form = form.copy(category = event.category)
-                )
-            }
+            is DescriptionChanged -> reduce { copy(form = form.copy(description = event.description)) }
 
-            is PriorityChanged -> _uiState.update {
-                it.copy(
-                    form = it.form.copy(priority = event.priority)
-                )
-            }
+            is CategoryChanged -> reduce { copy(form = form.copy(category = event.category)) }
+
+            is PriorityChanged -> reduce { copy(form = form.copy(priority = event.priority)) }
 
             SubmitForm -> handleSubmit()
         }
@@ -80,10 +65,14 @@ class EditTaskViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            taskRepository.addTask(taskModel)
-
-            reduce { copy(isSubmitting = false) }
-            navigator.goTo(Back)
+            try {
+                taskRepository.addTask(taskModel)
+                reduce { copy(isSubmitting = false) }
+                navigator.goTo(Back)
+            } catch (e: Exception) {
+                reduce { copy(isSubmitting = false) }
+                // TODO(valdese): Surface error to the user
+            }
         }
     }
 

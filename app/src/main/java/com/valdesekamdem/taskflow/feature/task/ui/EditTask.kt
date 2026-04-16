@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -94,7 +93,6 @@ fun EditTaskFormContent(
             label = { Text("Title") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
                 imeAction = ImeAction.Next
             ),
             modifier = Modifier.fillMaxWidth()
@@ -106,7 +104,7 @@ fun EditTaskFormContent(
             label = { Text("Description") },
             minLines = 3,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
+                keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
             ),
             modifier = Modifier.fillMaxWidth()
@@ -166,7 +164,7 @@ private fun FormRow(
     Column(modifier = modifier) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = Spacing.xsmall)
         )
 
