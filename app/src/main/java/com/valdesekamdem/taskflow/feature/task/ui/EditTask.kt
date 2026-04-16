@@ -20,10 +20,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent
@@ -80,7 +82,7 @@ fun EditTask(
                     )
                     Spacer(Modifier.size(Spacing.small))
                 }
-                Text("Save")
+                Text(stringResource(R.string.edit_task_save_button))
             }
         }
     }
@@ -104,7 +106,7 @@ fun EditTaskFormContent(
         OutlinedTextField(
             value = form.title,
             onValueChange = onTitleChanged,
-            label = { Text("Title") },
+            label = { Text(stringResource(R.string.edit_task_title_label)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next
@@ -115,7 +117,7 @@ fun EditTaskFormContent(
         OutlinedTextField(
             value = form.description,
             onValueChange = onDescriptionChanged,
-            label = { Text("Description") },
+            label = { Text(stringResource(R.string.edit_task_description_label)) },
             minLines = 3,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
@@ -126,13 +128,13 @@ fun EditTaskFormContent(
 
         SelectCategoryTextField(
             selectedCategory = form.category,
-            label = "Category",
+            label = stringResource(R.string.edit_task_category_label),
             onChanged = onCategoryChanged,
             modifier = Modifier.fillMaxWidth()
         )
 
         FormRow(
-            title = "Priority",
+            title = stringResource(R.string.edit_task_priority_label),
         ) {
             Row(
                 modifier = Modifier
