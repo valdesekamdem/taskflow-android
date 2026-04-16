@@ -1,6 +1,7 @@
 package com.valdesekamdem.taskflow.feature.task.viewmodel
 
 import app.cash.turbine.test
+import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
@@ -49,6 +50,18 @@ class EditTaskViewModelTest {
                 assertEquals(EditTaskForm(title = "Call J", description = "Desc"), this)
                 assertTrue(this.isFormValid)
             }
+
+            viewModel.onUiEvent(EditTaskUiEvent.PriorityChanged(Priority.Medium))
+            with(awaitItem().form) {
+                assertEquals(
+                    EditTaskForm(
+                        title = "Call J",
+                        description = "Desc",
+                        priority = Priority.Medium
+                    ), this
+                )
+                assertTrue(this.isFormValid)
+            }
         }
     }
 
@@ -57,10 +70,15 @@ class EditTaskViewModelTest {
         viewModel.test {
             onUiEvent(EditTaskUiEvent.TitleChanged("Call KKV tomorrow"))
             onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
+            onUiEvent(EditTaskUiEvent.PriorityChanged(Priority.High))
 
             onUiEvent(EditTaskUiEvent.SubmitForm)
             assertTrue(uiState.value.isSubmitting)
-            val expectedTaskModel = TaskModel(title = "Call KKV tomorrow", description = "Desc")
+            val expectedTaskModel = TaskModel(
+                title = "Call KKV tomorrow",
+                description = "Desc",
+                priority = Priority.High
+            )
             assertEquals(expectedTaskModel, taskRepository.addTaskCalls.awaitItem())
 
             assertFalse(uiState.value.isSubmitting)

@@ -9,6 +9,7 @@ import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.CloseClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.DescriptionChanged
+import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.PriorityChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.SubmitForm
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.TitleChanged
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,18 +50,25 @@ class EditTaskViewModel @Inject constructor(
                 )
             }
 
+            is PriorityChanged -> _uiState.update {
+                it.copy(
+                    form = it.form.copy(priority = event.priority)
+                )
+            }
+
             SubmitForm -> handleSubmit()
         }
     }
 
     private fun handleSubmit() {
         val currentForm = _uiState.value.form
-        val (title, description) = currentForm
+        val (title, description, priority) = currentForm
 
         reduce { copy(isSubmitting = true) }
         val taskModel = TaskModel(
             title = title,
             description = description,
+            priority = priority,
         )
 
         viewModelScope.launch {

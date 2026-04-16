@@ -2,13 +2,14 @@ package com.valdesekamdem.taskflow.feature.task.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -24,8 +25,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState
+import com.valdesekamdem.taskflow.ui.components.PriorityCard
 import com.valdesekamdem.taskflow.ui.components.topappbar.NavigationType
 import com.valdesekamdem.taskflow.ui.components.topappbar.TitleTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.Spacing
@@ -54,6 +57,7 @@ fun EditTask(
                 form = uiState.form,
                 onTitleChanged = { onUiEvent(EditTaskUiEvent.TitleChanged(it)) },
                 onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
+                onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
                 onSubmit = { onUiEvent(EditTaskUiEvent.SubmitForm) },
                 isSubmitting = uiState.isSubmitting,
                 modifier = Modifier.padding(horizontal = Spacing.medium),
@@ -67,6 +71,7 @@ fun EditTaskFormContent(
     form: EditTaskUiState.EditTaskForm,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
+    onPriorityChanged: (Priority) -> Unit,
     onSubmit: () -> Unit,
     isSubmitting: Boolean,
     modifier: Modifier = Modifier,
@@ -103,6 +108,26 @@ fun EditTaskFormContent(
             modifier = Modifier.fillMaxWidth()
         )
 
+        FormRow(
+            title = "Priority",
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.small),
+            ) {
+                Priority.entries.forEach { priority ->
+                    PriorityCard(
+                        priority = priority,
+                        onClick = { onPriorityChanged(priority) },
+                        isSelected = form.priority == priority,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
         Button(
             onClick = onSubmit,
             enabled = form.isFormValid && !isSubmitting,
@@ -114,10 +139,27 @@ fun EditTaskFormContent(
                     strokeWidth = 2.dp,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
-                Spacer(Modifier.width(Spacing.small))
+                Spacer(Modifier.size(Spacing.small))
             }
             Text("Save")
         }
+    }
+}
+
+@Composable
+private fun FormRow(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = Spacing.xsmall)
+        )
+
+        content()
     }
 }
 

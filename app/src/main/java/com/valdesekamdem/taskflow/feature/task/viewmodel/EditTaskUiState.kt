@@ -1,5 +1,7 @@
 package com.valdesekamdem.taskflow.feature.task.viewmodel
 
+import com.valdesekamdem.taskflow.core.model.Priority
+
 data class EditTaskUiState(
     val title: String,
     val form: EditTaskForm,
@@ -8,7 +10,7 @@ data class EditTaskUiState(
     data class EditTaskForm(
         val title: String = "",
         val description: String = "",
-//        val priority: Priority,
+        val priority: Priority = Priority.Low,
 //        val dueDate: Date,
 //        val category: String,
     ) {

@@ -4,7 +4,6 @@ import com.valdesekamdem.taskflow.core.database.dao.TaskDao
 import com.valdesekamdem.taskflow.core.database.model.TaskEntity
 import com.valdesekamdem.taskflow.core.database.model.toTask
 import com.valdesekamdem.taskflow.core.model.Category
-import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
@@ -28,7 +27,7 @@ class RealTaskRepository @Inject constructor(
                 id = null,
                 title = taskModel.title,
                 description = taskModel.description,
-                priority = Priority.Low,
+                priority = taskModel.priority,
                 category = Category.Personal,
                 dueDate = null,
                 reminder = null,
