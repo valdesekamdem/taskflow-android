@@ -2,6 +2,7 @@ package com.valdesekamdem.taskflow.feature.task.viewmodel
 
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
+import kotlin.time.Instant
 
 data class EditTaskUiState(
     val title: String,
@@ -13,7 +14,8 @@ data class EditTaskUiState(
         val description: String = "",
         val category: Category = Category.Personal,
         val priority: Priority = Priority.Low,
-//        val dueDate: Date,
+        val dueDate: Instant? = null,
+        val formattedDueDate: String = "",
     ) {
         val isFormValid: Boolean
             get() = title.isNotEmpty()

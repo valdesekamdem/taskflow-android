@@ -14,5 +14,7 @@ sealed interface EditTaskUiEvent {
 
     data class PriorityChanged(val priority: Priority) : EditTaskUiEvent
 
+    data class DueDateChanged(val dueDateUtc: Long?) : EditTaskUiEvent
+
     data object SubmitForm : EditTaskUiEvent
 }

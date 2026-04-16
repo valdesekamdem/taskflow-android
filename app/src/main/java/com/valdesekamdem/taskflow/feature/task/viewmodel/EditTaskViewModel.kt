@@ -2,6 +2,8 @@ package com.valdesekamdem.taskflow.feature.task.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.valdesekamdem.taskflow.core.clock.utils.fromUtcToInstant
+import com.valdesekamdem.taskflow.core.clock.utils.toMonthDayYear
 import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
@@ -10,6 +12,7 @@ import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.CategoryChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.CloseClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.DescriptionChanged
+import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.DueDateChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.PriorityChanged
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.SubmitForm
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent.TitleChanged
@@ -19,12 +22,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.ZoneId
 import javax.inject.Inject
 
 @HiltViewModel
 class EditTaskViewModel @Inject constructor(
     private val navigator: Navigator,
     private val taskRepository: TaskRepository,
+    private val zoneId: ZoneId,
 ) : ViewModel(), StateHolder<EditTaskUiState, EditTaskUiEvent> {
 
     private val _uiState = MutableStateFlow(
@@ -48,13 +53,19 @@ class EditTaskViewModel @Inject constructor(
 
             is PriorityChanged -> reduce { copy(form = form.copy(priority = event.priority)) }
 
+            is DueDateChanged -> reduce {
+                val instant = event.dueDateUtc?.fromUtcToInstant(zoneId)
+                val formattedDueDate = instant?.toMonthDayYear(zoneId) ?: ""
+                copy(form = form.copy(dueDate = instant, formattedDueDate = formattedDueDate))
+            }
+
             SubmitForm -> handleSubmit()
         }
     }
 
     private fun handleSubmit() {
         val currentForm = _uiState.value.form
-        val (title, description, category, priority) = currentForm
+        val (title, description, category, priority, dueDate) = currentForm
 
         reduce { copy(isSubmitting = true) }
         val taskModel = TaskModel(
@@ -62,6 +73,7 @@ class EditTaskViewModel @Inject constructor(
             description = description,
             category = category,
             priority = priority,
+            dueDate = dueDate,
         )
 
         viewModelScope.launch {

@@ -30,6 +30,7 @@ import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState
+import com.valdesekamdem.taskflow.ui.components.DatePickerFieldToModal
 import com.valdesekamdem.taskflow.ui.components.PriorityCard
 import com.valdesekamdem.taskflow.ui.components.SelectCategoryTextField
 import com.valdesekamdem.taskflow.ui.components.topappbar.NavigationType
@@ -62,6 +63,7 @@ fun EditTask(
                 onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
                 onCategoryChanged = { onUiEvent(EditTaskUiEvent.CategoryChanged(it)) },
                 onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
+                onDueDateChanged = { onUiEvent(EditTaskUiEvent.DueDateChanged(it)) },
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = Spacing.medium),
@@ -96,6 +98,7 @@ fun EditTaskFormContent(
     onCategoryChanged: (Category) -> Unit,
     onPriorityChanged: (Priority) -> Unit,
     modifier: Modifier = Modifier,
+    onDueDateChanged: (Long?) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -152,6 +155,14 @@ fun EditTaskFormContent(
                 }
             }
         }
+
+        DatePickerFieldToModal(
+            label = stringResource(R.string.edit_task_due_date_label),
+            modifier = Modifier.fillMaxWidth(),
+            selectedDate = form.dueDate,
+            formattedSelectedDate = form.formattedDueDate,
+            onDateSelected = onDueDateChanged,
+        )
     }
 }
 

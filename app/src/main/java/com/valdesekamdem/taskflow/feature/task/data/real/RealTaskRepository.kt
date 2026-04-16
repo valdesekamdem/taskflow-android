@@ -28,7 +28,7 @@ class RealTaskRepository @Inject constructor(
                 description = taskModel.description,
                 priority = taskModel.priority,
                 category = taskModel.category,
-                dueDate = null,
+                dueDate = taskModel.dueDate,
                 reminder = null,
                 isCompleted = false,
                 createdAt = clock.now(),

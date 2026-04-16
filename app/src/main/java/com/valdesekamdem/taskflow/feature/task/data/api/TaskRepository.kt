@@ -4,6 +4,7 @@ import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Instant
 
 interface TaskRepository {
     suspend fun addTask(taskModel: TaskModel)
@@ -16,4 +17,5 @@ data class TaskModel(
     val description: String,
     val category: Category,
     val priority: Priority,
+    val dueDate: Instant?,
 )
