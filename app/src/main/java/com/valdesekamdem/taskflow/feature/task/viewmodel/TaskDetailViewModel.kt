@@ -18,7 +18,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import java.time.ZoneId
 import kotlin.math.absoluteValue
 import kotlin.time.Clock
@@ -34,28 +34,21 @@ class TaskDetailViewModel @AssistedInject constructor(
 ) : ViewModel(), StateHolder<TaskDetailUiState, TaskDetailUiEvent> {
 
     override val uiState: StateFlow<TaskDetailUiState> =
-        flow {
-            taskRepository.getTask(screen.id.toLong())
-                .onSuccess {
-                    checkNotNull(it) // TODO: Implement error handling
-
-                    val taskDetailUiState = TaskDetailUiState(
-                        title = it.title,
-                        description = it.description,
-                        priority = it.priority,
-                        dueDate = it.dueDate!!.toDueDate(),
-                        category = it.category,
-                        tasksInCategory = null, // TODO: Implement this
-                        createdAt = it.createdAt.toMonthDayYear(zoneId),
-                        reminder = "-", // TODO: Implement this
-                    )
-
-                    emit(taskDetailUiState)
-                }
-                .onFailure {
-                    // TODO: Implement error handling
-                }
-        }.stateInWhileSubscribed(
+        taskRepository.getTask(screen.id)
+            .map { task ->
+                checkNotNull(task) // TODO: Implement error handling
+                TaskDetailUiState(
+                    title = task.title,
+                    description = task.description,
+                    priority = task.priority,
+                    dueDate = task.dueDate!!.toDueDate(),
+                    category = task.category,
+                    tasksInCategory = null, // TODO: Implement this
+                    createdAt = task.createdAt.toMonthDayYear(zoneId),
+                    reminder = "-", // TODO: Implement this
+                )
+            }
+            .stateInWhileSubscribed(
             initialValue = TaskDetailUiState(
                 title = "",
                 description = null,

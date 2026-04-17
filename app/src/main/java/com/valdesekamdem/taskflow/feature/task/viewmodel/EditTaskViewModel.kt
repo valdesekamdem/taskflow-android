@@ -24,6 +24,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.ZoneId
@@ -46,27 +48,23 @@ class EditTaskViewModel @AssistedInject constructor(
     override val uiState: StateFlow<EditTaskUiState> = _uiState.asStateFlow()
 
     init {
-        screen.id?.let { loadTask(it.toLong()) }
+        screen.id?.let { loadTask(it) }
     }
 
-    fun loadTask(id: Long) = viewModelScope.launch {
-        taskRepository.getTask(id)
-            .onSuccess { task ->
-                if (task != null) {
-                    reduce {
-                        copy(
-                            form = form.copy(
-                                title = task.title,
-                                description = task.description,
-                                category = task.category,
-                                priority = task.priority,
-                                dueDate = task.dueDate,
-                                formattedDueDate = task.dueDate?.toMonthDayYear(zoneId) ?: "",
-                            )
-                        )
-                    }
-                }
-            }
+    private fun loadTask(id: Int) = viewModelScope.launch {
+        val task = taskRepository.getTask(id).filterNotNull().first()
+        reduce {
+            copy(
+                form = form.copy(
+                    title = task.title,
+                    description = task.description,
+                    category = task.category,
+                    priority = task.priority,
+                    dueDate = task.dueDate,
+                    formattedDueDate = task.dueDate?.toMonthDayYear(zoneId) ?: "",
+                )
+            )
+        }
     }
 
     override fun onUiEvent(event: EditTaskUiEvent) {
@@ -107,7 +105,7 @@ class EditTaskViewModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 if (screen.id != null) {
-                    taskRepository.updateTask(screen.id!!.toLong(), taskModel)
+                    taskRepository.updateTask(screen.id.toLong(), taskModel)
                 } else {
                     taskRepository.addTask(taskModel)
                 }

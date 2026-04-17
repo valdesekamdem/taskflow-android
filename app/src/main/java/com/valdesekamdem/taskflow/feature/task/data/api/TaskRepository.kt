@@ -13,7 +13,7 @@ interface TaskRepository {
 
     fun getTasks(): Flow<List<Task>>
 
-    suspend fun getTask(id: Long): Result<Task?>
+    fun getTask(id: Int): Flow<Task?>
 }
 
 data class TaskModel(

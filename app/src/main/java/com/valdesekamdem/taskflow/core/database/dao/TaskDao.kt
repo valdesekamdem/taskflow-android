@@ -18,7 +18,7 @@ interface TaskDao {
     fun getAll(): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks WHERE id = :id")
-    suspend fun getTaskById(id: Long): TaskEntity?
+    fun getTaskById(id: Int): Flow<TaskEntity?>
 
     @Query("UPDATE tasks SET title = :title, description = :description, priority = :priority, category = :category, due_date = :dueDate, updated_at = :updatedAt WHERE id = :id")
     suspend fun updateTask(

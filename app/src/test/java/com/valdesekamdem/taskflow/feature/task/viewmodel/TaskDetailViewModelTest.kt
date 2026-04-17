@@ -47,7 +47,7 @@ class TaskDetailViewModelTest {
 
     private suspend fun <T> TurbineTestContext<T>.loadTask(task: Task): T {
         skipItem("Initial state")
-        taskRepository.task.add(Result.success(task))
+        taskRepository.task.send(task)
         return awaitItem()
     }
 

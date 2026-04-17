@@ -182,7 +182,7 @@ class EditTaskViewModelTest {
                 throw RuntimeException("Database error")
 
             override fun getTasks(): Flow<List<Task>> = emptyFlow()
-            override suspend fun getTask(id: Long): Result<Task?> = Result.success(null)
+            override fun getTask(id: Int): Flow<Task?> = emptyFlow()
         }
         val viewModel = EditTaskViewModel(
             navigator = navigator,
@@ -206,7 +206,7 @@ class EditTaskViewModelTest {
     @Test
     fun `edit task screen title is Edit task`() = runTest {
         val viewModel = createViewModel(EditTaskScreen(id = 42))
-        taskRepository.task.add(Result.success(buildTask()))
+        taskRepository.task.send(buildTask())
 
         assertEquals("Edit task", viewModel.uiState.value.title)
     }
@@ -218,9 +218,9 @@ class EditTaskViewModelTest {
 
         viewModel.uiState.test {
             skipItem("Initial empty state")
-            taskRepository.task.add(Result.success(task))
+            taskRepository.task.send(task)
 
-            assertEquals(42L, taskRepository.getTaskCalls.awaitItem())
+            assertEquals(42, taskRepository.getTaskCalls.receive())
             with(awaitItem().form) {
                 assertEquals(task.title, title)
                 assertEquals(task.description, description)
@@ -239,7 +239,7 @@ class EditTaskViewModelTest {
 
         viewModel.uiState.test {
             skipItem("Initial empty state")
-            taskRepository.task.add(Result.success(task))
+            taskRepository.task.send(task)
             skipItem("Form prepopulated")
 
             viewModel.onUiEvent(EditTaskUiEvent.SubmitForm)
@@ -270,7 +270,7 @@ class EditTaskViewModelTest {
 
         viewModel.uiState.test {
             skipItem("Initial empty state")
-            taskRepository.task.add(Result.success(task))
+            taskRepository.task.send(task)
             skipItem("Form prepopulated")
 
             viewModel.onUiEvent(EditTaskUiEvent.SubmitForm)
