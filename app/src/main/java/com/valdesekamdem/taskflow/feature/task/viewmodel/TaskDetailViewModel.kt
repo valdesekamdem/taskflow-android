@@ -8,8 +8,10 @@ import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.BackClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
 import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -69,6 +71,7 @@ class TaskDetailViewModel @AssistedInject constructor(
     override fun onUiEvent(event: TaskDetailUiEvent) {
         when (event) {
             BackClicked -> navigator.goTo(Back)
+            EditClicked -> navigator.goTo(EditTaskScreen(id = screen.id))
         }
     }
 

@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +26,8 @@ import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.BackClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiState
 import com.valdesekamdem.taskflow.ui.components.PriorityBadge
 import com.valdesekamdem.taskflow.ui.components.TaskInfoCard
@@ -41,7 +46,15 @@ fun TaskDetail(
             TitleTopAppBar(
                 title = stringResource(R.string.task_detail_title),
                 navigationType = NavigationType.BACK,
-                onNavigationClicked = { onUiEvent(TaskDetailUiEvent.BackClicked) },
+                onNavigationClicked = { onUiEvent(BackClicked) },
+                actions = {
+                    IconButton({ onUiEvent(EditClicked) }) {
+                        Icon(
+                            painter = painterResource(R.drawable.edit_24),
+                            contentDescription = stringResource(R.string.task_detail_edit_icon_description),
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->

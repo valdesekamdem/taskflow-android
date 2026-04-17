@@ -10,8 +10,10 @@ import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
+import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.BackClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
 import com.valdesekamdem.taskflow.utils.skipItem
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
@@ -65,6 +67,15 @@ class TaskDetailViewModelTest {
         viewModel.test {
             onUiEvent(BackClicked)
             assertEquals(Back, navigator.screens.awaitItem())
+        }
+    }
+
+    @Test
+    fun `navigates to EditTaskScreen with correct id when EditClicked event is received`() =
+        runTest {
+            viewModel.test {
+                onUiEvent(EditClicked)
+                assertEquals(EditTaskScreen(id = screen.id), navigator.screens.awaitItem())
         }
     }
 

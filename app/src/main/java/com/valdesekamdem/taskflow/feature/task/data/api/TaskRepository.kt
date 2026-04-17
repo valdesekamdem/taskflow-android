@@ -9,6 +9,8 @@ import kotlin.time.Instant
 interface TaskRepository {
     suspend fun addTask(taskModel: TaskModel)
 
+    suspend fun updateTask(id: Long, taskModel: TaskModel)
+
     fun getTasks(): Flow<List<Task>>
 
     suspend fun getTask(id: Long): Result<Task?>

@@ -25,9 +25,11 @@ class TaskUiFactory @Inject constructor() : UiFactory {
                 TaskDetail(uiState = uiState, onUiEvent = onUiEvent)
             }
         }
-        entry<EditTaskScreen> {
+        entry<EditTaskScreen> { screen ->
             BindScreen(
-                stateHolder = hiltViewModel<EditTaskViewModel>()
+                stateHolder = hiltViewModel<EditTaskViewModel, EditTaskViewModel.Factory> { factory ->
+                    factory.create(screen)
+                }
             ) { uiState, onUiEvent ->
                 EditTask(uiState = uiState, onUiEvent = onUiEvent)
             }

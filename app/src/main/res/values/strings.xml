@@ -8,6 +8,8 @@
     <string name="edit_task_category_label">Category</string>
     <string name="edit_task_priority_label">Priority</string>
     <string name="edit_task_due_date_label">Due date</string>
+    <string name="edit_task_new_title">New task</string>
+    <string name="edit_task_edit_title">Edit task</string>
     <string name="edit_task_save_button">Save</string>
 
     <string name="ok">OK</string>
@@ -15,4 +17,5 @@
     <string name="task_detail_title">Task detail</string>
     <string name="task_detail_created_label">Created</string>
     <string name="task_detail_reminder_label">Reminder</string>
+    <string name="task_detail_edit_icon_description">Edit task</string>
 </resources>

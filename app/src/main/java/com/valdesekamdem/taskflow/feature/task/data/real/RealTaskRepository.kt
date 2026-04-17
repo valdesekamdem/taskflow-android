@@ -46,6 +46,18 @@ class RealTaskRepository @Inject constructor(
         }
     }
 
+    override suspend fun updateTask(id: Long, taskModel: TaskModel) {
+        taskDao.updateTask(
+            id = id,
+            title = taskModel.title,
+            description = taskModel.description,
+            priority = taskModel.priority,
+            category = taskModel.category,
+            dueDate = taskModel.dueDate,
+            updatedAt = clock.now(),
+        )
+    }
+
     override suspend fun getTask(id: Long): Result<Task?> {
         return suspendRunCatching { taskDao.getTaskById(id) }
             .map { it?.toTask() }

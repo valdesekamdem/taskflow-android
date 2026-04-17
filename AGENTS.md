@@ -25,6 +25,11 @@ repository.
 ./gradlew connectedAndroidTest
 ```
 
+## Coding style
+
+- Use trailing comma
+- Don't add unnecessary comments. E.g. `// --- Edit mode tests ---`
+
 ## Architecture
 
 **MVVM + Clean Architecture**, single `:app` module, feature-based package structure under
