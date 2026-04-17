@@ -6,6 +6,7 @@ import com.valdesekamdem.taskflow.core.database.model.toTask
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.utils.suspendRunCatching
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -43,5 +44,10 @@ class RealTaskRepository @Inject constructor(
         return taskDao.getAll().map { taskEntities ->
             taskEntities.map { it.toTask() }
         }
+    }
+
+    override suspend fun getTask(id: Long): Result<Task?> {
+        return suspendRunCatching { taskDao.getTaskById(id) }
+            .map { it?.toTask() }
     }
 }

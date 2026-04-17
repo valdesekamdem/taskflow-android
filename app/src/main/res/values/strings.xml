@@ -12,4 +12,7 @@
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="task_detail_title">Task detail</string>
+    <string name="task_detail_created_label">Created</string>
+    <string name="task_detail_reminder_label">Reminder</string>
 </resources>

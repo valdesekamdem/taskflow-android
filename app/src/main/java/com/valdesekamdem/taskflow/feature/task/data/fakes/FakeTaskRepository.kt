@@ -19,4 +19,11 @@ class FakeTaskRepository : TaskRepository {
     override fun getTasks(): Flow<List<Task>> {
         return tasks.receiveAsFlow()
     }
+
+    val getTaskCalls = Turbine<Long>()
+    val task = Turbine<Result<Task?>>()
+    override suspend fun getTask(id: Long): Result<Task?> {
+        getTaskCalls.add(id)
+        return task.awaitItem()
+    }
 }
