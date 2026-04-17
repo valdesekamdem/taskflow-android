@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import com.valdesekamdem.taskflow.core.clock.utils.toMonthDayYear
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
+import com.valdesekamdem.taskflow.core.navigation.api.Back
+import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.BackClicked
 import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -21,11 +24,12 @@ import kotlin.time.Instant
 
 @HiltViewModel(assistedFactory = TaskDetailViewModel.Factory::class)
 class TaskDetailViewModel @AssistedInject constructor(
+    private val navigator: Navigator,
     private val taskRepository: TaskRepository,
     private val clock: Clock,
     private val zoneId: ZoneId,
     @Assisted private val screen: TaskDetailScreen,
-) : ViewModel(), StateHolder<TaskDetailUiState, Unit> {
+) : ViewModel(), StateHolder<TaskDetailUiState, TaskDetailUiEvent> {
 
     override val uiState: StateFlow<TaskDetailUiState> =
         flow {
@@ -62,8 +66,10 @@ class TaskDetailViewModel @AssistedInject constructor(
             ),
         )
 
-    override fun onUiEvent(event: Unit) {
-        TODO("Not yet implemented")
+    override fun onUiEvent(event: TaskDetailUiEvent) {
+        when (event) {
+            BackClicked -> navigator.goTo(Back)
+        }
     }
 
     private fun Instant.toDueDate(): TaskDetailUiState.DueDate {

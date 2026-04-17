@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiState
 import com.valdesekamdem.taskflow.ui.components.PriorityBadge
 import com.valdesekamdem.taskflow.ui.components.TaskInfoCard
@@ -33,13 +34,14 @@ import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 @Composable
 fun TaskDetail(
     uiState: TaskDetailUiState,
+    onUiEvent: (TaskDetailUiEvent) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TitleTopAppBar(
                 title = stringResource(R.string.task_detail_title),
                 navigationType = NavigationType.BACK,
-                onNavigationClicked = { },
+                onNavigationClicked = { onUiEvent(TaskDetailUiEvent.BackClicked) },
             )
         }
     ) { innerPadding ->
@@ -147,6 +149,7 @@ private fun Content(
 fun TaskDetailPreview() {
     TaskflowTheme {
         TaskDetail(
+            onUiEvent = {},
             uiState = TaskDetailUiState(
                 title = "Finalize Q1 report",
                 description = "Review all quarterly numbers with the finance team. Make sure revenue projections align with the updated forecast model.",

@@ -42,6 +42,19 @@ Every screen follows the same contract:
   ViewModels directly.
 - **`UiFactory`** — each feature registers its screens via `@IntoSet` Hilt multi-binding.
   `MainActivity` collects the `Set<UiFactory>` and passes it to `NavDisplay`.
+- Import the specific event to avoid cognitive load when reading the code with multiple events.
+
+```kotlin
+// Preferred 
+`import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskClicked`
+
+TaskClicked(task)
+
+// Not preferred
+`import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent`
+
+HomeUiEvent.TaskClicked(task)
+```
 
 #### UI
 
@@ -106,6 +119,10 @@ Flow/StateFlow assertions use **Turbine** (`app.cash.turbine`).
 
 Tests use `runTest` (coroutines-test) and `@get:Rule` with `DefaultLocaleRule` when locale-sensitive
 formatting is involved.
+
+## Git
+
+- Stage new files
 
 ## Big Gotchas
 

@@ -7,9 +7,13 @@ import com.valdesekamdem.taskflow.core.clock.utils.DefaultLocaleRule
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
+import com.valdesekamdem.taskflow.core.navigation.api.Back
+import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.BackClicked
 import com.valdesekamdem.taskflow.utils.skipItem
+import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -26,11 +30,13 @@ class TaskDetailViewModelTest {
 
     // FakeClock defaults to 2026-01-01T10:00:00Z
     private val clock = FakeClock()
+    private val navigator = FakeNavigator()
     private val taskRepository = FakeTaskRepository()
     private val zoneId = ZoneId.of("UTC")
     private val screen = TaskDetailScreen(id = "1", title = "Test Task")
 
     private val viewModel = TaskDetailViewModel(
+        navigator = navigator,
         taskRepository = taskRepository,
         clock = clock,
         zoneId = zoneId,
@@ -53,6 +59,14 @@ class TaskDetailViewModelTest {
         createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         dueDate = dueDate,
     )
+
+    @Test
+    fun `navigates to Back screen when BackClicked event is received`() = runTest {
+        viewModel.test {
+            onUiEvent(BackClicked)
+            assertEquals(Back, navigator.screens.awaitItem())
+        }
+    }
 
     @Test
     fun `successful task load maps all fields to uiState`() = runTest {
