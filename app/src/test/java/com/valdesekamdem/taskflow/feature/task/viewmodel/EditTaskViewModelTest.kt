@@ -178,7 +178,7 @@ class EditTaskViewModelTest {
             override suspend fun addTask(taskModel: TaskModel): Unit =
                 throw RuntimeException("Database error")
 
-            override suspend fun updateTask(id: Long, taskModel: TaskModel): Unit =
+            override suspend fun updateTask(id: Int, taskModel: TaskModel): Unit =
                 throw RuntimeException("Database error")
 
             override fun getTasks(): Flow<List<Task>> = emptyFlow()
@@ -246,7 +246,7 @@ class EditTaskViewModelTest {
             assertTrue(awaitItem().isSubmitting)
 
             val (id, model) = taskRepository.updateTaskCalls.awaitItem()
-            assertEquals(42L, id)
+            assertEquals(42, id)
             assertEquals(
                 TaskModel(
                     title = task.title,

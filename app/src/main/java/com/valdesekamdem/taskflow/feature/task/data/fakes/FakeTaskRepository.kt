@@ -15,8 +15,8 @@ class FakeTaskRepository : TaskRepository {
         addTaskCalls.add(taskModel)
     }
 
-    val updateTaskCalls = Turbine<Pair<Long, TaskModel>>()
-    override suspend fun updateTask(id: Long, taskModel: TaskModel) {
+    val updateTaskCalls = Turbine<Pair<Int, TaskModel>>()
+    override suspend fun updateTask(id: Int, taskModel: TaskModel) {
         updateTaskCalls.add(id to taskModel)
     }
 

@@ -45,7 +45,7 @@ class RealTaskRepository @Inject constructor(
         }
     }
 
-    override suspend fun updateTask(id: Long, taskModel: TaskModel) {
+    override suspend fun updateTask(id: Int, taskModel: TaskModel) {
         taskDao.updateTask(
             id = id,
             title = taskModel.title,
