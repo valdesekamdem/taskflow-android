@@ -39,4 +39,26 @@ class ClockUtilsTest {
             ),
         )
     }
+
+    @Test
+    fun `toMonthDayYear formats instant with day and full year`() {
+        val instant = Instant.parse("2026-01-01T00:00:00.00Z")
+
+        assertEquals(
+            "January 1, 2026",
+            instant.toMonthDayYear(zoneId = ZoneId.of("UTC")),
+        )
+    }
+
+    @Test
+    fun `fromUtcToInstant maps epoch millis to start of day in the given zone`() {
+        // The UTC date of the epoch millis is January 15. Toronto (UTC-5 in January) starts
+        // that calendar day 5 hours later in UTC terms.
+        val epochMillis = Instant.parse("2026-01-15T00:00:00.00Z").toEpochMilliseconds()
+
+        assertEquals(
+            Instant.parse("2026-01-15T05:00:00.00Z"),
+            epochMillis.fromUtcToInstant(ZoneId.of("America/Toronto")),
+        )
+    }
 }
