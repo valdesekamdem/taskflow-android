@@ -68,7 +68,7 @@ fun Home(
         ) {
             items(
                 items = uiState.tasks,
-                key = { task -> task.id },
+                key = { task -> task.hashCode() },
             ) { task ->
                 TaskCard(
                     task = task,

@@ -107,7 +107,7 @@ class EditTaskViewModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 if (screen.id != null) {
-                    taskRepository.updateTask(screen.id.toLong(), taskModel)
+                    taskRepository.updateTask(screen.id!!.toLong(), taskModel)
                 } else {
                     taskRepository.addTask(taskModel)
                 }

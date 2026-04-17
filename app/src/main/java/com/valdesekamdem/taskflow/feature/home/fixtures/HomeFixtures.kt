@@ -7,7 +7,7 @@ import com.valdesekamdem.taskflow.feature.home.viewmodel.TaskUiModel
 object HomeFixtures {
     val tasks = listOf(
         TaskUiModel(
-            id = "task-1",
+            id = 1,
             title = "Finalize onboarding flow",
             description = "Tighten copy and handoff the last two onboarding screens.",
             priority = Priority.High,
@@ -15,7 +15,7 @@ object HomeFixtures {
             dueDateText = "Due Mar 27",
         ),
         TaskUiModel(
-            id = "task-2",
+            id = 2,
             title = "Book dentist appointment",
             description = "Call the clinic and confirm the next available evening slot.",
             priority = Priority.Medium,
@@ -23,7 +23,7 @@ object HomeFixtures {
             dueDateText = "Due Mar 29",
         ),
         TaskUiModel(
-            id = "task-3",
+            id = 3,
             title = "Review sprint retro notes",
             description = "Pull action items into the next planning session.",
             priority = Priority.Low,

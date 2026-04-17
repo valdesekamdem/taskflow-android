@@ -35,7 +35,7 @@ class TaskDetailViewModelTest {
     private val navigator = FakeNavigator()
     private val taskRepository = FakeTaskRepository()
     private val zoneId = ZoneId.of("UTC")
-    private val screen = TaskDetailScreen(id = "1", title = "Test Task")
+    private val screen = TaskDetailScreen(id = 1)
 
     private val viewModel = TaskDetailViewModel(
         navigator = navigator,

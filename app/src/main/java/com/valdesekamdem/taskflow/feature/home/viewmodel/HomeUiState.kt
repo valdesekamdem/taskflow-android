@@ -8,7 +8,7 @@ data class HomeUiState(
 )
 
 data class TaskUiModel(
-    val id: String,
+    val id: Int,
     val title: String,
     val description: String,
     val priority: Priority,

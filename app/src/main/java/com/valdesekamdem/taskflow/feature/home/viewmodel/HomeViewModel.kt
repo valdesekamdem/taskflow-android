@@ -43,7 +43,7 @@ class HomeViewModel @Inject constructor(
 
     override fun onUiEvent(event: HomeUiEvent) = when (event) {
         is TaskClicked -> navigator.goTo(
-            screen = TaskDetailScreen(event.task.id, event.task.title)
+            screen = TaskDetailScreen(event.task.id)
         )
 
         is NewTaskClicked -> navigator.goTo(
@@ -55,7 +55,7 @@ class HomeViewModel @Inject constructor(
 private fun List<Task>.toTaskUiModels() = map { it.toTaskUiModel() }
 
 private fun Task.toTaskUiModel() = TaskUiModel(
-    id = id.toString(),
+    id = id,
     title = title,
     description = description,
     priority = priority,

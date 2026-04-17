@@ -205,7 +205,7 @@ class EditTaskViewModelTest {
 
     @Test
     fun `edit task screen title is Edit task`() = runTest {
-        val viewModel = createViewModel(EditTaskScreen(id = "42"))
+        val viewModel = createViewModel(EditTaskScreen(id = 42))
         taskRepository.task.add(Result.success(buildTask()))
 
         assertEquals("Edit task", viewModel.uiState.value.title)
@@ -214,7 +214,7 @@ class EditTaskViewModelTest {
     @Test
     fun `edit mode fetches task and prepopulates the form`() = runTest {
         val task = buildTask()
-        val viewModel = createViewModel(EditTaskScreen(id = "42"))
+        val viewModel = createViewModel(EditTaskScreen(id = 42))
 
         viewModel.uiState.test {
             skipItem("Initial empty state")
@@ -235,7 +235,7 @@ class EditTaskViewModelTest {
     @Test
     fun `submit in edit mode calls updateTask with correct data`() = runTest {
         val task = buildTask()
-        val viewModel = createViewModel(EditTaskScreen(id = "42"))
+        val viewModel = createViewModel(EditTaskScreen(id = 42))
 
         viewModel.uiState.test {
             skipItem("Initial empty state")
@@ -266,7 +266,7 @@ class EditTaskViewModelTest {
     @Test
     fun `submit in edit mode does not call addTask`() = runTest {
         val task = buildTask()
-        val viewModel = createViewModel(EditTaskScreen(id = "42"))
+        val viewModel = createViewModel(EditTaskScreen(id = 42))
 
         viewModel.uiState.test {
             skipItem("Initial empty state")

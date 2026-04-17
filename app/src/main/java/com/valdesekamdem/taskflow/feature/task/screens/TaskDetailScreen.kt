@@ -5,6 +5,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TaskDetailScreen(
-    val id: String,
-    val title: String,
+    val id: Int,
 ) : Screen

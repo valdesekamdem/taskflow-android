@@ -64,7 +64,7 @@ class HomeViewModelTest {
                     todayDate = "January 01",
                     tasks = listOf(
                         TaskUiModel(
-                            id = "1",
+                            id = 1,
                             title = "Very rapid test",
                             description = "Description",
                             priority = Priority.High,
@@ -81,13 +81,10 @@ class HomeViewModelTest {
     @Test
     fun `TaskClicked event navigates to TaskDetailScreen`() = runTest {
         viewModel.test {
-            val task = HomeFixtures.tasks.first().copy(
-                id = "task-id",
-                title = "Very rapid test"
-            )
+            val task = HomeFixtures.tasks.first().copy(id = 42)
             onUiEvent(HomeUiEvent.TaskClicked(task))
 
-            assertEquals(TaskDetailScreen(task.id, task.title), navigator.screens.awaitItem())
+            assertEquals(TaskDetailScreen(task.id), navigator.screens.awaitItem())
         }
     }
 
