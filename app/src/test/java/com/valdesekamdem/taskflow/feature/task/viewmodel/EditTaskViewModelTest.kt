@@ -58,7 +58,7 @@ class EditTaskViewModelTest {
 
     @Test
     fun `new task screen title is New task`() = runTest {
-        assertEquals("New task", createViewModel().uiState.value.title)
+        assertEquals("NEW TASK", createViewModel().uiState.value.title)
     }
 
     @Test
@@ -209,7 +209,7 @@ class EditTaskViewModelTest {
         val viewModel = createViewModel(EditTaskScreen(id = 42))
         taskRepository.task.send(buildTask())
 
-        assertEquals("Edit task", viewModel.uiState.value.title)
+        assertEquals("EDIT TASK", viewModel.uiState.value.title)
     }
 
     @Test

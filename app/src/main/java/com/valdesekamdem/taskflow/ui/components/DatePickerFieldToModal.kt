@@ -26,7 +26,6 @@ import kotlin.time.Instant
 
 @Composable
 fun DatePickerFieldToModal(
-    label: String,
     selectedDate: Instant?,
     formattedSelectedDate: String,
     onDateSelected: (Long?) -> Unit,
@@ -38,7 +37,6 @@ fun DatePickerFieldToModal(
         readOnly = true,
         value = formattedSelectedDate,
         onValueChange = { },
-        label = { Text(label) },
         trailingIcon = {
             Icon(painter = painterResource(R.drawable.calendar_24), contentDescription = null)
         },

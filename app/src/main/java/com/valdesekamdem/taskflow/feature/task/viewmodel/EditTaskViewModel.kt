@@ -40,7 +40,7 @@ class EditTaskViewModel @AssistedInject constructor(
 
     private val _uiState = MutableStateFlow(
         EditTaskUiState(
-            title = if (screen.id != null) "Edit task" else "New task",
+            title = if (screen.id != null) "EDIT TASK" else "NEW TASK",
             form = EditTaskUiState.EditTaskForm(),
             isSubmitting = false,
         )

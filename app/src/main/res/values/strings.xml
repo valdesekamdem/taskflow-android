@@ -3,11 +3,13 @@
     <string name="add_new_task_button_description">Add a new task</string>
     <string name="home_title">Home</string>
 
-    <string name="edit_task_title_label">Title</string>
-    <string name="edit_task_description_label">Description</string>
-    <string name="edit_task_category_label">Category</string>
-    <string name="edit_task_priority_label">Priority</string>
-    <string name="edit_task_due_date_label">Due date</string>
+    <string name="edit_task_title_label">TITLE</string>
+    <string name="edit_task_title_placeholder">What needs to be done?</string>
+    <string name="edit_task_description_label">DESCRIPTION</string>
+    <string name="edit_task_description_placeholder">Add more detail…</string>
+    <string name="edit_task_category_label">CATEGORY</string>
+    <string name="edit_task_priority_label">PRIORITY</string>
+    <string name="edit_task_due_date_label">DUE DATE</string>
     <string name="edit_task_new_title">New task</string>
     <string name="edit_task_edit_title">Edit task</string>
     <string name="edit_task_save_button">Save</string>

@@ -21,7 +21,6 @@ import com.valdesekamdem.taskflow.core.model.Category
 @Composable
 fun SelectCategoryTextField(
     selectedCategory: Category,
-    label: String,
     onChanged: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -36,7 +35,6 @@ fun SelectCategoryTextField(
             readOnly = true,
             value = selectedCategory.name,
             onValueChange = {},
-            label = { Text(text = label) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },

@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,8 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valdesekamdem.taskflow.R
@@ -49,44 +51,37 @@ fun EditTask(
                 title = uiState.title,
                 navigationType = NavigationType.CLOSE,
                 onNavigationClicked = { onUiEvent(EditTaskUiEvent.CloseClicked) },
+                actions = {
+                    Button(
+                        onClick = { onUiEvent(EditTaskUiEvent.SubmitForm) },
+                        enabled = uiState.form.isFormValid && !uiState.isSubmitting,
+                        modifier = Modifier
+                            .padding(Spacing.medium),
+                    ) {
+                        if (uiState.isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                            Spacer(Modifier.size(Spacing.small))
+                        }
+                        Text(stringResource(R.string.edit_task_save_button))
+                    }
+                }
             )
         }
     ) { innerPadding ->
-        Column(
+        EditTaskFormContent(
+            form = uiState.form,
+            onTitleChanged = { onUiEvent(EditTaskUiEvent.TitleChanged(it)) },
+            onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
+            onCategoryChanged = { onUiEvent(EditTaskUiEvent.CategoryChanged(it)) },
+            onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
+            onDueDateChanged = { onUiEvent(EditTaskUiEvent.DueDateChanged(it)) },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            EditTaskFormContent(
-                form = uiState.form,
-                onTitleChanged = { onUiEvent(EditTaskUiEvent.TitleChanged(it)) },
-                onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
-                onCategoryChanged = { onUiEvent(EditTaskUiEvent.CategoryChanged(it)) },
-                onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
-                onDueDateChanged = { onUiEvent(EditTaskUiEvent.DueDateChanged(it)) },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = Spacing.medium),
-            )
-
-            Button(
-                onClick = { onUiEvent(EditTaskUiEvent.SubmitForm) },
-                enabled = uiState.form.isFormValid && !uiState.isSubmitting,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(Spacing.medium),
-            ) {
-                if (uiState.isSubmitting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(Modifier.size(Spacing.small))
-                }
-                Text(stringResource(R.string.edit_task_save_button))
-            }
-        }
+                .padding(innerPadding),
+        )
     }
 }
 
@@ -103,41 +98,44 @@ fun EditTaskFormContent(
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = modifier.verticalScroll(scrollState),
+        modifier = modifier
+            .padding(horizontal = Spacing.medium)
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(Spacing.medium)
     ) {
-        OutlinedTextField(
-            value = form.title,
-            onValueChange = onTitleChanged,
-            label = { Text(stringResource(R.string.edit_task_title_label)) },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = form.description,
-            onValueChange = onDescriptionChanged,
-            label = { Text(stringResource(R.string.edit_task_description_label)) },
-            minLines = 3,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        SelectCategoryTextField(
-            selectedCategory = form.category,
-            label = stringResource(R.string.edit_task_category_label),
-            onChanged = onCategoryChanged,
-            modifier = Modifier.fillMaxWidth()
-        )
+        FormRow(
+            label = stringResource(R.string.edit_task_title_label),
+            required = true,
+        ) {
+            OutlinedTextField(
+                value = form.title,
+                onValueChange = onTitleChanged,
+                placeholder = { Text(stringResource(R.string.edit_task_title_placeholder)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        FormRow(
+            label = stringResource(R.string.edit_task_description_label),
+        ) {
+            OutlinedTextField(
+                value = form.description,
+                onValueChange = onDescriptionChanged,
+                placeholder = { Text(stringResource(R.string.edit_task_description_placeholder)) },
+                minLines = 3,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         FormRow(
-            title = stringResource(R.string.edit_task_priority_label),
+            label = stringResource(R.string.edit_task_priority_label),
         ) {
             Row(
                 modifier = Modifier
@@ -156,26 +154,57 @@ fun EditTaskFormContent(
             }
         }
 
-        DatePickerFieldToModal(
-            label = stringResource(R.string.edit_task_due_date_label),
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            selectedDate = form.dueDate,
-            formattedSelectedDate = form.formattedDueDate,
-            onDateSelected = onDueDateChanged,
-        )
+            horizontalArrangement = Arrangement.spacedBy(Spacing.medium)
+        ) {
+            FormRow(
+                label = stringResource(R.string.edit_task_due_date_label),
+                required = true,
+                modifier = Modifier.weight(1f),
+            ) {
+                DatePickerFieldToModal(
+                    modifier = Modifier.fillMaxWidth(),
+                    selectedDate = form.dueDate,
+                    formattedSelectedDate = form.formattedDueDate,
+                    onDateSelected = onDueDateChanged,
+                )
+            }
+
+            FormRow(
+                label = stringResource(R.string.edit_task_category_label),
+                modifier = Modifier.weight(1f),
+            ) {
+                SelectCategoryTextField(
+                    selectedCategory = form.category,
+                    onChanged = onCategoryChanged,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun FormRow(
-    title: String,
+    label: String,
     modifier: Modifier = Modifier,
+    required: Boolean = false,
     content: @Composable () -> Unit,
 ) {
+    val annotatedLabel = buildAnnotatedString {
+        append(label)
+        if (required) {
+            withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
+                append(" *")
+            }
+        }
+    }
+
     Column(modifier = modifier) {
         Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
+            text = annotatedLabel,
+            style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(bottom = Spacing.xsmall)
         )
 
@@ -189,7 +218,7 @@ fun EditTaskPreview() {
     TaskflowTheme {
         EditTask(
             uiState = EditTaskUiState(
-                title = "New task",
+                title = "NEW TASK",
                 form = EditTaskUiState.EditTaskForm(),
             ),
             onUiEvent = {}
