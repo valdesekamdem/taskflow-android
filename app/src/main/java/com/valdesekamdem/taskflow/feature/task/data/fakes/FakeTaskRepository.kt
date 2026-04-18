@@ -31,4 +31,9 @@ class FakeTaskRepository : TaskRepository {
         getTaskCalls.trySend(id)
         return task.receiveAsFlow()
     }
+
+    val deleteTaskCalls = Turbine<Int>()
+    override suspend fun deleteTask(id: Int) {
+        deleteTaskCalls.add(id)
+    }
 }

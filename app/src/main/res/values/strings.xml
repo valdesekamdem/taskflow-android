@@ -14,8 +14,16 @@
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+
     <string name="task_detail_title">Task detail</string>
     <string name="task_detail_created_label">Created</string>
     <string name="task_detail_reminder_label">Reminder</string>
     <string name="task_detail_edit_icon_description">Edit task</string>
+    <string name="task_detail_delete_icon_description">Delete task</string>
+    <string name="task_detail_delete_dialog_title">Delete task?</string>
+    <string name="task_detail_delete_dialog_message">This action cannot be undone.</string>
+    <string name="task_detail_deleted_title">Task deleted</string>
+    <string name="task_detail_deleted_message">This task has been permanently removed.</string>
+    <string name="task_detail_deleted_go_home">Go to home</string>
 </resources>

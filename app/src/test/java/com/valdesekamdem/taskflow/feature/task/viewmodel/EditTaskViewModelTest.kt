@@ -183,6 +183,7 @@ class EditTaskViewModelTest {
 
             override fun getTasks(): Flow<List<Task>> = emptyFlow()
             override fun getTask(id: Int): Flow<Task?> = emptyFlow()
+            override suspend fun deleteTask(id: Int) {}
         }
         val viewModel = EditTaskViewModel(
             navigator = navigator,

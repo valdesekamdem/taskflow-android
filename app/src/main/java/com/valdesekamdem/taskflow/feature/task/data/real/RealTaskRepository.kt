@@ -60,4 +60,6 @@ class RealTaskRepository @Inject constructor(
     override fun getTask(id: Int): Flow<Task?> {
         return taskDao.getTaskById(id).map { it?.toTask() }
     }
+
+    override suspend fun deleteTask(id: Int) = taskDao.deleteTask(id)
 }

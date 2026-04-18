@@ -1,6 +1,7 @@
 package com.valdesekamdem.taskflow.feature.task.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.valdesekamdem.taskflow.core.clock.utils.toMonthDayYear
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
@@ -11,14 +12,20 @@ import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.BackClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.DeleteCancelled
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.DeleteClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.DeleteConfirmed
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.GoHomeClicked
 import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import java.time.ZoneId
 import kotlin.math.absoluteValue
 import kotlin.time.Clock
@@ -33,49 +40,72 @@ class TaskDetailViewModel @AssistedInject constructor(
     @Assisted private val screen: TaskDetailScreen,
 ) : ViewModel(), StateHolder<TaskDetailUiState, TaskDetailUiEvent> {
 
-    override val uiState: StateFlow<TaskDetailUiState> =
-        taskRepository.getTask(screen.id)
-            .map { task ->
-                checkNotNull(task) // TODO: Implement error handling
-                TaskDetailUiState(
-                    title = task.title,
-                    description = task.description,
-                    priority = task.priority,
-                    dueDate = task.dueDate!!.toDueDate(),
-                    category = task.category,
-                    tasksInCategory = null, // TODO: Implement this
-                    createdAt = task.createdAt.toMonthDayYear(zoneId),
-                    reminder = "-", // TODO: Implement this
-                )
-            }
-            .stateInWhileSubscribed(
-            initialValue = TaskDetailUiState(
-                title = "",
-                description = null,
-                priority = Priority.Medium,
-                dueDate = TaskDetailUiState.DueDate(date = "", countDown = null, isOverdue = false),
-                category = Category.Personal,
+    private val showDeleteConfirmation = MutableStateFlow(false)
+    private val isDeleted = MutableStateFlow(false)
+
+    override val uiState: StateFlow<TaskDetailUiState> = combine(
+        taskRepository.getTask(screen.id),
+        showDeleteConfirmation,
+        isDeleted,
+    ) { task, showDialog, isDeleted ->
+        when {
+            isDeleted -> TaskDetailUiState.Deleted
+            task == null -> error("Task not found: ${screen.id}")
+            else -> TaskDetailUiState.Content(
+                title = task.title,
+                description = task.description,
+                priority = task.priority,
+                dueDate = task.dueDate!!.toDueDate(),
+                category = task.category,
                 tasksInCategory = null,
-                createdAt = "",
-                reminder = ""
+                createdAt = task.createdAt.toMonthDayYear(zoneId),
+                reminder = "-",
+                showDeleteConfirmation = showDialog,
+            )
+        }
+    }.stateInWhileSubscribed(
+        initialValue = TaskDetailUiState.Content(
+            title = "",
+            description = null,
+            priority = Priority.Medium,
+            dueDate = TaskDetailUiState.Content.DueDate(
+                date = "",
+                countDown = null,
+                isOverdue = false
             ),
+            category = Category.Personal,
+            tasksInCategory = null,
+            createdAt = "",
+            reminder = "",
         )
+    )
 
     override fun onUiEvent(event: TaskDetailUiEvent) {
         when (event) {
             BackClicked -> navigator.goTo(Back)
             EditClicked -> navigator.goTo(EditTaskScreen(id = screen.id))
+            DeleteClicked -> showDeleteConfirmation.value = true
+            DeleteCancelled -> showDeleteConfirmation.value = false
+            DeleteConfirmed -> {
+                showDeleteConfirmation.value = false
+                viewModelScope.launch {
+                    taskRepository.deleteTask(screen.id)
+                    isDeleted.value = true
+                }
+            }
+
+            GoHomeClicked -> navigator.goTo(Back)
         }
     }
 
-    private fun Instant.toDueDate(): TaskDetailUiState.DueDate {
+    private fun Instant.toDueDate(): TaskDetailUiState.Content.DueDate {
         val daysLeft = this.minus(clock.now()).inWholeDays
         val countDown = when {
             daysLeft == 0L -> "Overdue today"
             daysLeft < 0 -> "Overdue ${daysLeft.absoluteValue} days ago"
             else -> "Due in $daysLeft days"
         }
-        return TaskDetailUiState.DueDate(
+        return TaskDetailUiState.Content.DueDate(
             date = toMonthDayYear(zoneId),
             countDown = countDown,
             isOverdue = daysLeft < 0,

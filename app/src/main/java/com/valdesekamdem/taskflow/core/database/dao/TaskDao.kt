@@ -30,4 +30,7 @@ interface TaskDao {
         dueDate: Instant?,
         updatedAt: Instant
     )
+
+    @Query("DELETE FROM tasks WHERE id = :id")
+    suspend fun deleteTask(id: Int)
 }

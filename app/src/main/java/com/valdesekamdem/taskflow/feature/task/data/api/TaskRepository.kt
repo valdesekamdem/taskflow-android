@@ -14,6 +14,8 @@ interface TaskRepository {
     fun getTasks(): Flow<List<Task>>
 
     fun getTask(id: Int): Flow<Task?>
+
+    suspend fun deleteTask(id: Int)
 }
 
 data class TaskModel(
