@@ -6,10 +6,8 @@ import com.valdesekamdem.taskflow.core.database.model.toTask
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Clock
@@ -20,23 +18,22 @@ class RealTaskRepository @Inject constructor(
     private val clock: Clock,
 ) : TaskRepository {
 
-    override suspend fun addTask(taskModel: TaskModel) =
-        withContext(Dispatchers.IO) { // FIXME(valdese): Inject the context to facilitate testing
-            val taskEntity = TaskEntity(
-                id = null,
-                title = taskModel.title,
-                description = taskModel.description,
-                priority = taskModel.priority,
-                category = taskModel.category,
-                dueDate = taskModel.dueDate,
-                reminder = null,
-                isCompleted = false,
-                createdAt = clock.now(),
-                updatedAt = null,
-                notes = null,
-            )
+    override suspend fun addTask(taskModel: TaskModel) {
+        val taskEntity = TaskEntity(
+            id = null,
+            title = taskModel.title,
+            description = taskModel.description,
+            priority = taskModel.priority,
+            category = taskModel.category,
+            dueDate = taskModel.dueDate,
+            reminder = null,
+            isCompleted = false,
+            createdAt = clock.now(),
+            updatedAt = null,
+            notes = null,
+        )
 
-            taskDao.insertAll(taskEntity)
+        taskDao.insertAll(taskEntity)
     }
 
     override fun getTasks(): Flow<List<Task>> {

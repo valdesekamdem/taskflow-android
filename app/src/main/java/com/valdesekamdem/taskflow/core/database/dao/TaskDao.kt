@@ -12,7 +12,7 @@ import kotlin.time.Instant
 @Dao
 interface TaskDao {
     @Insert
-    fun insertAll(vararg tasks: TaskEntity)
+    suspend fun insertAll(vararg tasks: TaskEntity)
 
     @Query("SELECT * FROM tasks")
     fun getAll(): Flow<List<TaskEntity>>
