@@ -91,7 +91,7 @@ fun TaskCard(
                 }
 
                 Icon(
-                    painter = painterResource(R.drawable.calendar_24),
+                    painter = painterResource(R.drawable.schedule_24),
                     contentDescription = null,
                     modifier = Modifier.size(12.dp),
                     tint = dueDateColor,

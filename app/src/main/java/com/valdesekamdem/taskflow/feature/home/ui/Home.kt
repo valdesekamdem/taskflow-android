@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -69,7 +70,8 @@ fun Home(
             ) { index, task ->
                 if (index > 0) {
                     HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = Spacing.medium)
+                        modifier = Modifier.padding(horizontal = Spacing.medium),
+                        color = DividerDefaults.color.copy(0.6f),
                     )
                 }
                 TaskCard(
