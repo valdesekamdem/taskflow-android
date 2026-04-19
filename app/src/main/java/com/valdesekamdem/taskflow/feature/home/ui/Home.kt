@@ -1,16 +1,15 @@
 package com.valdesekamdem.taskflow.feature.home.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -63,13 +62,16 @@ fun Home(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            contentPadding = PaddingValues(Spacing.medium),
-            verticalArrangement = Arrangement.spacedBy(Spacing.medium),
         ) {
-            items(
+            itemsIndexed(
                 items = uiState.tasks,
-                key = { task -> task.hashCode() },
-            ) { task ->
+                key = { _, task -> task.hashCode() },
+            ) { index, task ->
+                if (index > 0) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = Spacing.medium)
+                    )
+                }
                 TaskCard(
                     task = task,
                     onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) }

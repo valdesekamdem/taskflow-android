@@ -70,11 +70,84 @@ class HomeViewModelTest {
                             priority = Priority.High,
                             category = "Work",
                             dueDateText = "",
+                            isTaskOverdue = false,
                         )
                     ),
                 ),
                 awaitItem(),
             )
+        }
+    }
+
+    @Test
+    fun `uiState populates dueDateText with relative text when task has dueDate`() = runTest {
+        val task = Task(
+            id = 1,
+            title = "Task with due date",
+            description = "Description",
+            priority = Priority.Low,
+            category = Category.Personal,
+            dueDate = Instant.parse("2025-12-31T12:00:00.00Z"),
+            isCompleted = false,
+            createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
+        )
+
+        viewModel.uiState.test {
+            awaitItem()
+            taskRepository.tasks.send(listOf(task))
+
+            with(awaitItem().tasks.first()) {
+                assertEquals("Yesterday", dueDateText)
+                assertEquals(true, isTaskOverdue)
+            }
+        }
+    }
+
+    @Test
+    fun `uiState marks isDueDateOverdue false when dueDate is in the future`() = runTest {
+        val task = Task(
+            id = 1,
+            title = "Future task",
+            description = "Description",
+            priority = Priority.Low,
+            category = Category.Personal,
+            dueDate = Instant.parse("2026-01-02T12:00:00.00Z"),
+            isCompleted = false,
+            createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
+        )
+
+        viewModel.uiState.test {
+            awaitItem()
+            taskRepository.tasks.send(listOf(task))
+
+            with(awaitItem().tasks.first()) {
+                assertEquals("Tomorrow", dueDateText)
+                assertEquals(false, isTaskOverdue)
+            }
+        }
+    }
+
+    @Test
+    fun `uiState leaves dueDateText empty when task has no dueDate`() = runTest {
+        val task = Task(
+            id = 1,
+            title = "No due date task",
+            description = "Description",
+            priority = Priority.Low,
+            category = Category.Personal,
+            dueDate = null,
+            isCompleted = false,
+            createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
+        )
+
+        viewModel.uiState.test {
+            awaitItem()
+            taskRepository.tasks.send(listOf(task))
+
+            with(awaitItem().tasks.first()) {
+                assertEquals("", dueDateText)
+                assertEquals(false, isTaskOverdue)
+            }
         }
     }
 
