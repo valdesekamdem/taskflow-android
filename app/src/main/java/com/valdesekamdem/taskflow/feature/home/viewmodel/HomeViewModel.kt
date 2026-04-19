@@ -2,7 +2,9 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.valdesekamdem.taskflow.core.clock.utils.toMonthDay
+import com.valdesekamdem.taskflow.core.clock.utils.toRelativeDateText
 import com.valdesekamdem.taskflow.core.model.Task
+import kotlin.time.Instant
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClicked
@@ -38,7 +40,7 @@ class HomeViewModel @Inject constructor(
         _uiState,
         taskRepository.getTasks(),
     ) { state, tasks ->
-        state.copy(tasks = tasks.toTaskUiModels())
+        state.copy(tasks = tasks.toTaskUiModels(clock.now(), zoneId))
     }.stateInWhileSubscribed(_uiState.value)
 
     override fun onUiEvent(event: HomeUiEvent) = when (event) {
@@ -52,13 +54,14 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-private fun List<Task>.toTaskUiModels() = map { it.toTaskUiModel() }
+private fun List<Task>.toTaskUiModels(now: Instant, zoneId: ZoneId) = map { it.toTaskUiModel(now, zoneId) }
 
-private fun Task.toTaskUiModel() = TaskUiModel(
+private fun Task.toTaskUiModel(now: Instant, zoneId: ZoneId) = TaskUiModel(
     id = id,
     title = title,
     description = description,
     priority = priority,
     category = category.name,
-    dueDateText = "",
+    dueDateText = dueDate?.toRelativeDateText(now, zoneId) ?: "",
+    isTaskOverdue = dueDate?.let { it < now } ?: false,
 )

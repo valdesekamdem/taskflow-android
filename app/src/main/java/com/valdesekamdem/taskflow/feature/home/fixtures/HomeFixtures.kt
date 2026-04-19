@@ -12,7 +12,8 @@ object HomeFixtures {
             description = "Tighten copy and handoff the last two onboarding screens.",
             priority = Priority.High,
             category = "Work",
-            dueDateText = "Due Mar 27",
+            dueDateText = "Yesterday",
+            isTaskOverdue = true,
         ),
         TaskUiModel(
             id = 2,
@@ -20,7 +21,8 @@ object HomeFixtures {
             description = "Call the clinic and confirm the next available evening slot.",
             priority = Priority.Medium,
             category = "Personal",
-            dueDateText = "Due Mar 29",
+            dueDateText = "Tomorrow",
+            isTaskOverdue = false,
         ),
         TaskUiModel(
             id = 3,
@@ -28,7 +30,8 @@ object HomeFixtures {
             description = "Pull action items into the next planning session.",
             priority = Priority.Low,
             category = "Planning",
-            dueDateText = "Due Apr 1",
+            dueDateText = "In 4 days",
+            isTaskOverdue = false,
         ),
     )
 
