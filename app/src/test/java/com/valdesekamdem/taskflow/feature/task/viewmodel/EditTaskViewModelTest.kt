@@ -52,7 +52,7 @@ class EditTaskViewModelTest {
         priority = Priority.High,
         category = Category.Work,
         dueDate = Instant.parse("2026-03-15T00:00:00.00Z"),
-        isCompleted = false,
+        completedAt = null,
         createdAt = Instant.parse("2026-01-01T00:00:00.00Z"),
     )
 
@@ -183,6 +183,8 @@ class EditTaskViewModelTest {
 
             override fun getTasks(): Flow<List<Task>> = emptyFlow()
             override fun getTask(id: Int): Flow<Task?> = emptyFlow()
+            override suspend fun markTaskCompleted(id: Int) {}
+            override suspend fun unmarkTaskCompleted(id: Int) {}
             override suspend fun deleteTask(id: Int) {}
         }
         val viewModel = EditTaskViewModel(

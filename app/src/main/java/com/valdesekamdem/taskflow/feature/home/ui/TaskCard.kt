@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,15 +33,19 @@ import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 import com.valdesekamdem.taskflow.ui.utils.accentColor
 
 private val PriorityDotSize = 10.dp
+private val CheckboxSize = 20.dp
 
-// Aligns description/metadata with the title: Checkbox(20dp + 2dp padding) + spacer + dot + spacer
-private val ContentIndent = /*24.dp + Spacing.small +*/ PriorityDotSize + Spacing.small
+// Aligns description/metadata with the title: checkbox + spacer + dot + spacer
+private val ContentIndent = CheckboxSize + Spacing.medium + PriorityDotSize + Spacing.small
 
 @Composable
 fun TaskCard(
     task: TaskUiModel,
     onClick: () -> Unit,
+    onCompleteClicked: () -> Unit,
 ) {
+    val mutedColor = MaterialTheme.colorScheme.onSurfaceVariant
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,11 +56,12 @@ fun TaskCard(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            /*Checkbox(
-                checked = false,
-                onCheckedChange = null,
+            Checkbox(
+                modifier = Modifier.size(CheckboxSize),
+                checked = task.isCompleted,
+                onCheckedChange = if (!task.isCompleted) { _ -> onCompleteClicked() } else null,
             )
-            Spacer(Modifier.width(Spacing.small))*/
+            Spacer(Modifier.width(Spacing.medium))
             Box(
                 modifier = Modifier
                     .size(PriorityDotSize)
@@ -65,7 +72,9 @@ fun TaskCard(
                 text = task.title,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
+                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
                 ),
+                color = if (task.isCompleted) mutedColor else MaterialTheme.colorScheme.onSurface,
             )
         }
 
@@ -73,7 +82,7 @@ fun TaskCard(
             modifier = Modifier.padding(start = ContentIndent),
             text = task.description,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = mutedColor,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -84,10 +93,10 @@ fun TaskCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Spacing.xsmall),
             ) {
-                val dueDateColor = if (task.isTaskOverdue) {
+                val dueDateColor = if (!task.isCompleted && task.isTaskOverdue) {
                     MaterialTheme.colorScheme.error
                 } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
+                    mutedColor
                 }
 
                 Icon(
@@ -106,13 +115,13 @@ fun TaskCard(
                 Text(
                     text = "•",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = mutedColor,
                 )
 
                 Text(
                     text = task.category,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = mutedColor,
                 )
             }
         }
@@ -125,7 +134,8 @@ fun TaskCardOverduePreview() {
     TaskflowTheme {
         TaskCard(
             task = HomeFixtures.tasks.first(),
-            onClick = {}
+            onClick = {},
+            onCompleteClicked = {},
         )
     }
 }
@@ -136,7 +146,20 @@ fun TaskCardUpcomingPreview() {
     TaskflowTheme {
         TaskCard(
             task = HomeFixtures.tasks[1],
-            onClick = {}
+            onClick = {},
+            onCompleteClicked = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TaskCardCompletedPreview() {
+    TaskflowTheme {
+        TaskCard(
+            task = HomeFixtures.tasks[2],
+            onClick = {},
+            onCompleteClicked = {},
         )
     }
 }

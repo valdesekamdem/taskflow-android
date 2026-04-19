@@ -15,6 +15,10 @@ interface TaskRepository {
 
     fun getTask(id: Int): Flow<Task?>
 
+    suspend fun markTaskCompleted(id: Int)
+
+    suspend fun unmarkTaskCompleted(id: Int)
+
     suspend fun deleteTask(id: Int)
 }
 

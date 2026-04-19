@@ -10,7 +10,7 @@ data class Task(
     val category: Category,
     val dueDate: Instant? = null,
     val reminder: Instant? = null,
-    val isCompleted: Boolean,
+    val completedAt: Instant? = null,
     val createdAt: Instant,
     val updatedAt: Instant? = null,
     val notes: String? = null,

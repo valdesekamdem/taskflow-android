@@ -33,4 +33,6 @@
     <string name="task_detail_deleted_go_home">Go to home</string>
     <string name="edit_task_choose_category">Choose category</string>
     <string name="edit_task_choose_priority">Choose priority</string>
+    <string name="task_detail_mark_complete">Mark complete</string>
+    <string name="task_detail_unmark_complete">Unmark complete</string>
 </resources>

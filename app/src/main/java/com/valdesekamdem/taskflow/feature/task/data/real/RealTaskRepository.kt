@@ -27,7 +27,7 @@ class RealTaskRepository @Inject constructor(
             category = taskModel.category,
             dueDate = taskModel.dueDate,
             reminder = null,
-            isCompleted = false,
+            completedAt = null,
             createdAt = clock.now(),
             updatedAt = null,
             notes = null,
@@ -57,6 +57,10 @@ class RealTaskRepository @Inject constructor(
     override fun getTask(id: Int): Flow<Task?> {
         return taskDao.getTaskById(id).map { it?.toTask() }
     }
+
+    override suspend fun markTaskCompleted(id: Int) = taskDao.markTaskCompleted(id, clock.now())
+
+    override suspend fun unmarkTaskCompleted(id: Int) = taskDao.unmarkTaskCompleted(id)
 
     override suspend fun deleteTask(id: Int) = taskDao.deleteTask(id)
 }

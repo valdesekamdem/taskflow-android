@@ -32,6 +32,16 @@ class FakeTaskRepository : TaskRepository {
         return task.receiveAsFlow()
     }
 
+    val markTaskCompletedCalls = Turbine<Int>()
+    override suspend fun markTaskCompleted(id: Int) {
+        markTaskCompletedCalls.add(id)
+    }
+
+    val unmarkTaskCompletedCalls = Turbine<Int>()
+    override suspend fun unmarkTaskCompleted(id: Int) {
+        unmarkTaskCompletedCalls.add(id)
+    }
+
     val deleteTaskCalls = Turbine<Int>()
     override suspend fun deleteTask(id: Int) {
         deleteTaskCalls.add(id)

@@ -50,7 +50,7 @@ class HomeViewModelTest {
             description = "Description",
             priority = Priority.High,
             category = Category.Work,
-            isCompleted = false,
+            completedAt = null,
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
@@ -71,6 +71,7 @@ class HomeViewModelTest {
                             category = "Work",
                             dueDateText = "",
                             isTaskOverdue = false,
+                            isCompleted = false,
                         )
                     ),
                 ),
@@ -88,7 +89,7 @@ class HomeViewModelTest {
             priority = Priority.Low,
             category = Category.Personal,
             dueDate = Instant.parse("2025-12-31T12:00:00.00Z"),
-            isCompleted = false,
+            completedAt = null,
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
@@ -112,7 +113,7 @@ class HomeViewModelTest {
             priority = Priority.Low,
             category = Category.Personal,
             dueDate = Instant.parse("2026-01-02T12:00:00.00Z"),
-            isCompleted = false,
+            completedAt = null,
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
@@ -136,7 +137,7 @@ class HomeViewModelTest {
             priority = Priority.Low,
             category = Category.Personal,
             dueDate = null,
-            isCompleted = false,
+            completedAt = null,
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
@@ -166,6 +167,15 @@ class HomeViewModelTest {
         viewModel.test {
             onUiEvent(HomeUiEvent.NewTaskClicked)
             assertEquals(EditTaskScreen(null), navigator.screens.awaitItem())
+        }
+    }
+
+    @Test
+    fun `TaskCompleteClicked calls markTaskCompleted with correct id`() = runTest {
+        viewModel.test {
+            val task = HomeFixtures.tasks.first().copy(id = 7)
+            onUiEvent(HomeUiEvent.TaskCompleteClicked(task))
+            assertEquals(task.id, taskRepository.markTaskCompletedCalls.awaitItem())
         }
     }
 }

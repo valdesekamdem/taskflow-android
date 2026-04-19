@@ -27,6 +27,7 @@ import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClicked
+import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCompleteClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiState
 import com.valdesekamdem.taskflow.ui.components.topappbar.LevelOneTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.Spacing
@@ -76,7 +77,8 @@ fun Home(
                 }
                 TaskCard(
                     task = task,
-                    onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) }
+                    onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) },
+                    onCompleteClicked = { onUiEvent(TaskCompleteClicked(task)) },
                 )
             }
         }

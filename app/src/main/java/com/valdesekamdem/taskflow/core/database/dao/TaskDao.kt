@@ -31,6 +31,12 @@ interface TaskDao {
         updatedAt: Instant
     )
 
+    @Query("UPDATE tasks SET completed_at = :completedAt WHERE id = :id")
+    suspend fun markTaskCompleted(id: Int, completedAt: Instant)
+
+    @Query("UPDATE tasks SET completed_at = NULL WHERE id = :id")
+    suspend fun unmarkTaskCompleted(id: Int)
+
     @Query("DELETE FROM tasks WHERE id = :id")
     suspend fun deleteTask(id: Int)
 }

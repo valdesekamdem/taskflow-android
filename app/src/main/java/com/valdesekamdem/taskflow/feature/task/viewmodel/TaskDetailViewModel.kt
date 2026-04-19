@@ -17,6 +17,8 @@ import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.Delet
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.DeleteConfirmed
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.GoHomeClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.MarkCompleteClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.UnmarkCompleteClicked
 import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -60,6 +62,7 @@ class TaskDetailViewModel @AssistedInject constructor(
                 tasksInCategory = null,
                 createdAt = task.createdAt.toMonthDayYear(zoneId),
                 reminder = "-",
+                isCompleted = task.completedAt != null,
                 showDeleteConfirmation = showDialog,
             )
         }
@@ -95,6 +98,12 @@ class TaskDetailViewModel @AssistedInject constructor(
             }
 
             GoHomeClicked -> navigator.goTo(Back)
+            MarkCompleteClicked -> viewModelScope.launch { taskRepository.markTaskCompleted(screen.id) }
+            UnmarkCompleteClicked -> viewModelScope.launch {
+                taskRepository.unmarkTaskCompleted(
+                    screen.id
+                )
+            }
         }
     }
 

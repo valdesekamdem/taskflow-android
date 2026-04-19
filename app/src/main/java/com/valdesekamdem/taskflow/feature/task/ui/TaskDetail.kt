@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -18,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,6 +42,8 @@ import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.Delet
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.DeleteConfirmed
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.GoHomeClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.MarkCompleteClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.UnmarkCompleteClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiState
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiState.Content
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiState.Deleted
@@ -101,6 +105,31 @@ private fun ContentScreen(
                     .weight(1f)
                     .padding(horizontal = Spacing.medium)
             )
+
+            if (uiState.isCompleted) {
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Spacing.medium),
+                    onClick = { onUiEvent(UnmarkCompleteClicked) },
+                ) {
+                    Text(stringResource(R.string.task_detail_unmark_complete))
+                }
+            } else {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Spacing.medium),
+                    onClick = { onUiEvent(MarkCompleteClicked) },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.check_24),
+                        contentDescription = null,
+                    )
+                    Spacer(Modifier.width(Spacing.small))
+                    Text(stringResource(R.string.task_detail_mark_complete))
+                }
+            }
         }
     }
 

@@ -11,7 +11,7 @@ import com.valdesekamdem.taskflow.core.database.util.InstantConverter
     entities = [
         TaskEntity::class,
     ],
-    version = 1,
+    version = 2,
 )
 @TypeConverters(
     InstantConverter::class,

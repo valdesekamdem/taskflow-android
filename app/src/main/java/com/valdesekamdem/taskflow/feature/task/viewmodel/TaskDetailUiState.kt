@@ -14,6 +14,7 @@ sealed interface TaskDetailUiState {
         val tasksInCategory: String?,
         val createdAt: String,
         val reminder: String,
+        val isCompleted: Boolean = false,
         val showDeleteConfirmation: Boolean = false,
     ) : TaskDetailUiState {
         data class DueDate(

@@ -12,4 +12,8 @@ sealed interface TaskDetailUiEvent {
     data object DeleteCancelled : TaskDetailUiEvent
 
     data object GoHomeClicked : TaskDetailUiEvent
+
+    data object MarkCompleteClicked : TaskDetailUiEvent
+
+    data object UnmarkCompleteClicked : TaskDetailUiEvent
 }

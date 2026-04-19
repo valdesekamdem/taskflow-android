@@ -15,4 +15,5 @@ data class TaskUiModel(
     val category: String,
     val dueDateText: String,
     val isTaskOverdue: Boolean,
+    val isCompleted: Boolean,
 )

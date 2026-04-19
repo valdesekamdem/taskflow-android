@@ -14,6 +14,7 @@ object HomeFixtures {
             category = "Work",
             dueDateText = "Yesterday",
             isTaskOverdue = true,
+            isCompleted = false,
         ),
         TaskUiModel(
             id = 2,
@@ -23,6 +24,7 @@ object HomeFixtures {
             category = "Personal",
             dueDateText = "Tomorrow",
             isTaskOverdue = false,
+            isCompleted = false,
         ),
         TaskUiModel(
             id = 3,
@@ -32,6 +34,7 @@ object HomeFixtures {
             category = "Planning",
             dueDateText = "In 4 days",
             isTaskOverdue = false,
+            isCompleted = true,
         ),
     )
 

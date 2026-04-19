@@ -18,6 +18,8 @@ import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.Delet
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.DeleteConfirmed
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.EditClicked
 import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.GoHomeClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.MarkCompleteClicked
+import com.valdesekamdem.taskflow.feature.task.viewmodel.TaskDetailUiEvent.UnmarkCompleteClicked
 import com.valdesekamdem.taskflow.utils.skipItem
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
@@ -55,13 +57,13 @@ class TaskDetailViewModelTest {
         return awaitItem() as TaskDetailUiState.Content
     }
 
-    private fun buildTask(dueDate: Instant? = null) = Task(
+    private fun buildTask(dueDate: Instant? = null, completedAt: Instant? = null) = Task(
         id = 1,
         title = "Buy groceries",
         description = "Milk and eggs",
         priority = Priority.High,
         category = Category.Personal,
-        isCompleted = false,
+        completedAt = completedAt,
         createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         dueDate = dueDate,
     )
@@ -112,6 +114,7 @@ class TaskDetailViewModelTest {
                 tasksInCategory = null,
                 createdAt = "January 1, 2026",
                 reminder = "-",
+                isCompleted = false,
             )
 
             assertEquals(expectedState, actualState)
@@ -221,5 +224,35 @@ class TaskDetailViewModelTest {
 
             assertEquals(TaskDetailUiState.Deleted, awaitItem())
         }
+    }
+
+    @Test
+    fun `isCompleted is false in uiState when task completedAt is null`() = runTest {
+        viewModel.uiState.test {
+            val content = loadTask(buildTask(dueDate = clock.now, completedAt = null))
+            assertFalse(content.isCompleted)
+        }
+    }
+
+    @Test
+    fun `isCompleted is true in uiState when task completedAt is set`() = runTest {
+        viewModel.uiState.test {
+            val content = loadTask(buildTask(dueDate = clock.now, completedAt = clock.now))
+            assertTrue(content.isCompleted)
+        }
+    }
+
+    @Test
+    fun `MarkCompleteClicked calls markTaskCompleted with correct id`() = runTest {
+        taskRepository.task.send(buildTask(dueDate = clock.now))
+        viewModel.onUiEvent(MarkCompleteClicked)
+        assertEquals(screen.id, taskRepository.markTaskCompletedCalls.awaitItem())
+    }
+
+    @Test
+    fun `UnmarkCompleteClicked calls unmarkTaskCompleted with correct id`() = runTest {
+        taskRepository.task.send(buildTask(dueDate = clock.now))
+        viewModel.onUiEvent(UnmarkCompleteClicked)
+        assertEquals(screen.id, taskRepository.unmarkTaskCompletedCalls.awaitItem())
     }
 }
