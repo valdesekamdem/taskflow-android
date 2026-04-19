@@ -12,7 +12,7 @@ import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
-import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState.EditTaskForm
+import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState.EditTaskFormUiModel
 import com.valdesekamdem.taskflow.utils.skipItem
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.flow.Flow
@@ -57,8 +57,8 @@ class EditTaskViewModelTest {
     )
 
     @Test
-    fun `new task screen title is New task`() = runTest {
-        assertEquals("NEW TASK", createViewModel().uiState.value.title)
+    fun `new task screen has isNewTask = true`() = runTest {
+        assertTrue(createViewModel().uiState.value.isNewTask)
     }
 
     @Test
@@ -74,26 +74,26 @@ class EditTaskViewModelTest {
         val viewModel = createViewModel()
         viewModel.uiState.test {
             with(awaitItem().form) {
-                assertEquals(EditTaskForm(), this)
+                assertEquals(EditTaskFormUiModel(), this)
                 assertFalse(this.isFormValid)
             }
 
             viewModel.onUiEvent(EditTaskUiEvent.TitleChanged("Call J"))
             with(awaitItem().form) {
-                assertEquals(EditTaskForm("Call J"), this)
+                assertEquals(EditTaskFormUiModel("Call J"), this)
                 assertTrue(this.isFormValid)
             }
 
             viewModel.onUiEvent(EditTaskUiEvent.DescriptionChanged("Desc"))
             with(awaitItem().form) {
-                assertEquals(EditTaskForm(title = "Call J", description = "Desc"), this)
+                assertEquals(EditTaskFormUiModel(title = "Call J", description = "Desc"), this)
                 assertTrue(this.isFormValid)
             }
 
             viewModel.onUiEvent(EditTaskUiEvent.PriorityChanged(Priority.Medium))
             with(awaitItem().form) {
                 assertEquals(
-                    EditTaskForm(
+                    EditTaskFormUiModel(
                         title = "Call J",
                         description = "Desc",
                         priority = Priority.Medium
@@ -205,11 +205,11 @@ class EditTaskViewModelTest {
     }
 
     @Test
-    fun `edit task screen title is Edit task`() = runTest {
+    fun `edit task screen has isNewTask = false`() = runTest {
         val viewModel = createViewModel(EditTaskScreen(id = 42))
         taskRepository.task.send(buildTask())
 
-        assertEquals("EDIT TASK", viewModel.uiState.value.title)
+        assertFalse(viewModel.uiState.value.isNewTask)
     }
 
     @Test

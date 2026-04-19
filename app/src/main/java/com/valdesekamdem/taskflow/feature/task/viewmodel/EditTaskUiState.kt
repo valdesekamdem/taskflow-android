@@ -5,11 +5,11 @@ import com.valdesekamdem.taskflow.core.model.Priority
 import kotlin.time.Instant
 
 data class EditTaskUiState(
-    val title: String,
-    val form: EditTaskForm,
+    val isNewTask: Boolean = true,
+    val form: EditTaskFormUiModel,
     val isSubmitting: Boolean = false,
 ) {
-    data class EditTaskForm(
+    data class EditTaskFormUiModel(
         val title: String = "",
         val description: String = "",
         val category: Category = Category.Personal,

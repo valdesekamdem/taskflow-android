@@ -1,40 +1,20 @@
 package com.valdesekamdem.taskflow.feature.task.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valdesekamdem.taskflow.R
-import com.valdesekamdem.taskflow.core.model.Category
-import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiEvent
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState
-import com.valdesekamdem.taskflow.ui.components.DatePickerFieldToModal
-import com.valdesekamdem.taskflow.ui.components.PriorityCard
-import com.valdesekamdem.taskflow.ui.components.SelectCategoryTextField
 import com.valdesekamdem.taskflow.ui.components.topappbar.NavigationType
 import com.valdesekamdem.taskflow.ui.components.topappbar.TitleTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.Spacing
@@ -45,170 +25,52 @@ fun EditTask(
     uiState: EditTaskUiState,
     onUiEvent: (EditTaskUiEvent) -> Unit,
 ) {
+    val screenTitle = if (uiState.isNewTask) {
+        stringResource(R.string.edit_task_new_title)
+    } else {
+        stringResource(R.string.edit_task_edit_title)
+    }
+    val submitLabel = if (uiState.isNewTask) {
+        stringResource(R.string.edit_task_create_button)
+    } else {
+        stringResource(R.string.edit_task_save_button)
+    }
+
     Scaffold(
         topBar = {
             TitleTopAppBar(
-                title = uiState.title,
+                title = screenTitle,
                 navigationType = NavigationType.CLOSE,
                 onNavigationClicked = { onUiEvent(EditTaskUiEvent.CloseClicked) },
                 actions = {
-                    Button(
+                    TextButton(
                         onClick = { onUiEvent(EditTaskUiEvent.SubmitForm) },
                         enabled = uiState.form.isFormValid && !uiState.isSubmitting,
-                        modifier = Modifier
-                            .padding(Spacing.medium),
+                        modifier = Modifier.padding(end = Spacing.small),
                     ) {
                         if (uiState.isSubmitting) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(Spacing.medium),
                                 strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary
+                                color = MaterialTheme.colorScheme.primary,
                             )
-                            Spacer(Modifier.size(Spacing.small))
+                        } else {
+                            Text(submitLabel)
                         }
-                        Text(stringResource(R.string.edit_task_save_button))
                     }
                 }
             )
         }
     ) { innerPadding ->
-        EditTaskFormContent(
+        EditTaskForm(
             form = uiState.form,
             onTitleChanged = { onUiEvent(EditTaskUiEvent.TitleChanged(it)) },
             onDescriptionChanged = { onUiEvent(EditTaskUiEvent.DescriptionChanged(it)) },
             onCategoryChanged = { onUiEvent(EditTaskUiEvent.CategoryChanged(it)) },
             onPriorityChanged = { onUiEvent(EditTaskUiEvent.PriorityChanged(it)) },
             onDueDateChanged = { onUiEvent(EditTaskUiEvent.DueDateChanged(it)) },
-            modifier = Modifier
-                .padding(innerPadding),
+            modifier = Modifier.padding(innerPadding),
         )
-    }
-}
-
-@Composable
-fun EditTaskFormContent(
-    form: EditTaskUiState.EditTaskForm,
-    onTitleChanged: (String) -> Unit,
-    onDescriptionChanged: (String) -> Unit,
-    onCategoryChanged: (Category) -> Unit,
-    onPriorityChanged: (Priority) -> Unit,
-    modifier: Modifier = Modifier,
-    onDueDateChanged: (Long?) -> Unit,
-) {
-    val scrollState = rememberScrollState()
-
-    Column(
-        modifier = modifier
-            .padding(horizontal = Spacing.medium)
-            .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.spacedBy(Spacing.medium)
-    ) {
-        FormRow(
-            label = stringResource(R.string.edit_task_title_label),
-            required = true,
-        ) {
-            OutlinedTextField(
-                value = form.title,
-                onValueChange = onTitleChanged,
-                placeholder = { Text(stringResource(R.string.edit_task_title_placeholder)) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-        FormRow(
-            label = stringResource(R.string.edit_task_description_label),
-        ) {
-            OutlinedTextField(
-                value = form.description,
-                onValueChange = onDescriptionChanged,
-                placeholder = { Text(stringResource(R.string.edit_task_description_placeholder)) },
-                minLines = 3,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        FormRow(
-            label = stringResource(R.string.edit_task_priority_label),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .selectableGroup(),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.small),
-            ) {
-                Priority.entries.forEach { priority ->
-                    PriorityCard(
-                        priority = priority,
-                        onClick = { onPriorityChanged(priority) },
-                        isSelected = form.priority == priority,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.medium)
-        ) {
-            FormRow(
-                label = stringResource(R.string.edit_task_due_date_label),
-                required = true,
-                modifier = Modifier.weight(1f),
-            ) {
-                DatePickerFieldToModal(
-                    modifier = Modifier.fillMaxWidth(),
-                    selectedDate = form.dueDate,
-                    formattedSelectedDate = form.formattedDueDate,
-                    onDateSelected = onDueDateChanged,
-                )
-            }
-
-            FormRow(
-                label = stringResource(R.string.edit_task_category_label),
-                modifier = Modifier.weight(1f),
-            ) {
-                SelectCategoryTextField(
-                    selectedCategory = form.category,
-                    onChanged = onCategoryChanged,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun FormRow(
-    label: String,
-    modifier: Modifier = Modifier,
-    required: Boolean = false,
-    content: @Composable () -> Unit,
-) {
-    val annotatedLabel = buildAnnotatedString {
-        append(label)
-        if (required) {
-            withStyle(SpanStyle(color = MaterialTheme.colorScheme.error)) {
-                append(" *")
-            }
-        }
-    }
-
-    Column(modifier = modifier) {
-        Text(
-            text = annotatedLabel,
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(bottom = Spacing.xsmall)
-        )
-
-        content()
     }
 }
 
@@ -218,8 +80,8 @@ fun EditTaskPreview() {
     TaskflowTheme {
         EditTask(
             uiState = EditTaskUiState(
-                title = "NEW TASK",
-                form = EditTaskUiState.EditTaskForm(),
+                isNewTask = true,
+                form = EditTaskUiState.EditTaskFormUiModel(),
             ),
             onUiEvent = {}
         )

@@ -12,7 +12,10 @@
     <string name="edit_task_due_date_label">DUE DATE</string>
     <string name="edit_task_new_title">New task</string>
     <string name="edit_task_edit_title">Edit task</string>
+    <string name="edit_task_create_button">Create</string>
     <string name="edit_task_save_button">Save</string>
+    <string name="edit_task_reminder_label">REMINDER</string>
+    <string name="edit_task_reminder_no_value">—</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
@@ -28,4 +31,6 @@
     <string name="task_detail_deleted_title">Task deleted</string>
     <string name="task_detail_deleted_message">This task has been permanently removed.</string>
     <string name="task_detail_deleted_go_home">Go to home</string>
+    <string name="edit_task_choose_category">Choose category</string>
+    <string name="edit_task_choose_priority">Choose priority</string>
 </resources>
