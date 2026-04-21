@@ -19,7 +19,7 @@ import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.navigation.real.NavigationEvent
 import com.valdesekamdem.taskflow.core.navigation.real.NavigationEventSource
 import com.valdesekamdem.taskflow.core.presentation.UiFactory
-import com.valdesekamdem.taskflow.feature.home.screens.HomeScreen
+import com.valdesekamdem.taskflow.feature.main.screens.MainScreen
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val backStack = rememberNavBackStack(HomeScreen)
+            val backStack = rememberNavBackStack(MainScreen)
             BindNavigator(navigationEventSource = navigationEventSource, backStack = backStack)
 
             TaskflowTheme {
@@ -64,6 +64,7 @@ fun BindNavigator(
             when (navigationEvent) {
                 NavigationEvent.Back -> backStack.removeLastOrNull()
                 is NavigationEvent.NavigateTo -> backStack.add(navigationEvent.screen)
+                NavigationEvent.PopToRoot -> while (backStack.size > 1) backStack.removeLastOrNull()
             }
         }
     }
