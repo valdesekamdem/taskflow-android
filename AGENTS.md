@@ -127,8 +127,56 @@ formatting is involved.
 
 ## Git
 
-- Stage new files
+- Add new files to VCS
 
 ## Big Gotchas
 
-Add learnings here as you encounter them.
+### Nested Scaffold inset double-consumption
+
+`contentWindowInsets = WindowInsets(0)` on a child Scaffold only suppresses insets when that
+Scaffold has **no** `topBar`/`bottomBar`. It does NOT prevent the parent Scaffold's `innerPadding`
+from being applied twice. The correct fix is to add `Modifier.consumeWindowInsets(innerPadding)` to
+the content area (e.g., the inner `NavDisplay`) so child Scaffolds know those insets are already
+consumed.
+
+### Navigator must never be injected into Composables
+
+Navigation logic belongs in ViewModels. Composables receive `uiState` and `onUiEvent` only. A
+Composable that holds a `Navigator` reference bypasses the ViewModel and makes navigation
+untestable.
+
+### `onBack` in an inner `NavDisplay` must not call `navigator.goTo(Back)`
+
+`navigator.goTo(Back)` routes to the **outer** navigation, which quits the app rather than
+returning to the Home tab. The inner `NavDisplay`'s `onBack` should fire a ViewModel event
+(e.g. `BackPressed`) and let the ViewModel decide whether to pop the inner backstack or delegate
+to the outer navigation.
+
+### Tab navigation from a deep screen leaves the outer backstack stale
+
+When `navigator.goTo(TabScreen)` is called from a full-screen overlay (e.g. `TaskDetailScreen`),
+the tab event updates the inner backstack but the outer backstack (`[MainScreen, TaskDetailScreen]`)
+is not touched — the overlay stays visible. Fix: emit `NavigationEvent.PopToRoot` on the outer
+channel first so `BindNavigator` clears the outer stack back to `MainScreen` before the tab switch
+is processed.
+
+### Kotlin `Channel` has a single consumer
+
+If outer navigation and tab navigation share the same `Channel`, whichever coroutine collects first
+will consume events meant for the other. Use two separate channels — one for outer events
+(`NavigationEvent`) and one for tab events (`TabNavigationEvent`).
+
+### `entryProvider(lambdaRef)` does not compile in Navigation 3
+
+`entryProvider` does not accept a lambda reference directly. Wrap the call:
+```kotlin
+entryProvider { tabEntryProvider() }  // correct
+entryProvider(tabEntryProvider)        // compile error
+```
+
+### Turbine `test {}` does not expose `onUiEvent`
+
+Inside Turbine's `Flow.test { }` block, `this` is `TurbineTestContext` — `onUiEvent` is not in
+scope. Either call `viewModel.onUiEvent(...)` explicitly, or use the project's `StateHolder.test {}`
+extension (from `ViewModelUtils.kt`) when you only need to fire events and check `uiState.value`
+without collecting a sequence of states.
