@@ -41,7 +41,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val backStack = rememberNavBackStack(MainScreen)
-            BindNavigator(navigationEventSource = navigationEventSource, backStack = backStack)
+            BindNavigator(
+                navigationEventSource = navigationEventSource,
+                backStack = backStack,
+                onExit = { finish() },
+            )
 
             TaskflowTheme {
                 Main(
@@ -58,11 +62,14 @@ class MainActivity : ComponentActivity() {
 fun BindNavigator(
     navigationEventSource: NavigationEventSource,
     backStack: NavBackStack<NavKey>,
+    onExit: () -> Unit,
 ) {
     LaunchedEffect(navigationEventSource, backStack) {
         navigationEventSource.events.collect { navigationEvent ->
             when (navigationEvent) {
-                NavigationEvent.Back -> backStack.removeLastOrNull()
+                NavigationEvent.Back -> {
+                    if (backStack.size <= 1) onExit() else backStack.removeLastOrNull()
+                }
                 is NavigationEvent.NavigateTo -> backStack.add(navigationEvent.screen)
                 NavigationEvent.PopToRoot -> while (backStack.size > 1) backStack.removeLastOrNull()
             }
