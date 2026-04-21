@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">taskflow</string>
+
+    <string name="main_nav_home">Home</string>
+    <string name="main_nav_tasks">Tasks</string>
+    <string name="main_nav_settings">Settings</string>
+
     <string name="add_new_task_button_description">Add a new task</string>
     <string name="home_title">Home</string>
 
