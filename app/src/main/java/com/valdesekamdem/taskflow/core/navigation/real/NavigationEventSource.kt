@@ -9,6 +9,6 @@ interface NavigationEventSource {
 
 sealed interface NavigationEvent {
     data class NavigateTo(val screen: Screen) : NavigationEvent
-
     data object Back : NavigationEvent
+    data object PopToRoot : NavigationEvent
 }

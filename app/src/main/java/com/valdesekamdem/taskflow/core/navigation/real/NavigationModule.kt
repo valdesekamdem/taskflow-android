@@ -15,4 +15,7 @@ abstract class NavigationModule {
 
     @Binds
     abstract fun provideNavigationEventSource(realNavigator: RealNavigator): NavigationEventSource
+
+    @Binds
+    abstract fun provideTabNavigationEventSource(realNavigator: RealNavigator): TabNavigationEventSource
 }
