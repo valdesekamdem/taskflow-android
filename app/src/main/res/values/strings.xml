@@ -35,4 +35,7 @@
     <string name="edit_task_choose_priority">Choose priority</string>
     <string name="task_detail_mark_complete">Mark complete</string>
     <string name="task_detail_unmark_complete">Unmark complete</string>
+
+    <string name="tasks_title">All tasks</string>
+    <string name="tasks_coming_soon">Tasks — coming soon</string>
 </resources>
