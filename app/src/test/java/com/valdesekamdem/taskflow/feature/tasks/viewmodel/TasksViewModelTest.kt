@@ -1,4 +1,4 @@
-package com.valdesekamdem.taskflow.feature.home.viewmodel
+package com.valdesekamdem.taskflow.feature.tasks.viewmodel
 
 import app.cash.turbine.test
 import com.valdesekamdem.taskflow.core.clock.fakes.FakeClock
@@ -7,10 +7,9 @@ import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
-import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
-import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
+import com.valdesekamdem.taskflow.feature.tasks.fixtures.TasksFixtures
 import com.valdesekamdem.taskflow.ui.model.TaskUiModel
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
@@ -20,7 +19,7 @@ import org.junit.Test
 import java.time.ZoneId
 import kotlin.time.Instant
 
-class HomeViewModelTest {
+class TasksViewModelTest {
     @get:Rule
     val defaultLocaleRule = DefaultLocaleRule()
 
@@ -29,7 +28,7 @@ class HomeViewModelTest {
     private val clock = FakeClock()
     private val zoneId = ZoneId.of("America/Toronto")
 
-    private val viewModel = HomeViewModel(
+    private fun createViewModel() = TasksViewModel(
         navigator = navigator,
         taskRepository = taskRepository,
         clock = clock,
@@ -37,14 +36,14 @@ class HomeViewModelTest {
     )
 
     @Test
-    fun `uiState initializes todayDate from injected clock`() = runTest {
-        viewModel.test {
-            assertEquals(HomeUiState(todayDate = "January 01"), uiState.value)
+    fun `uiState initializes with empty task list`() = runTest {
+        createViewModel().test {
+            assertEquals(TasksUiState(tasks = emptyList()), uiState.value)
         }
     }
 
     @Test
-    fun `uiState maps repository tasks while preserving injected todayDate`() = runTest {
+    fun `uiState maps repository tasks to TaskUiModel list`() = runTest {
         val task = Task(
             id = 1,
             title = "Very rapid test",
@@ -55,14 +54,13 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
-            assertEquals(HomeUiState(todayDate = "January 01"), awaitItem())
+        createViewModel().uiState.test {
+            assertEquals(TasksUiState(tasks = emptyList()), awaitItem())
 
             taskRepository.tasks.send(listOf(task))
 
             assertEquals(
-                HomeUiState(
-                    todayDate = "January 01",
+                TasksUiState(
                     tasks = listOf(
                         TaskUiModel(
                             id = 1,
@@ -73,7 +71,7 @@ class HomeViewModelTest {
                             dueDateText = "",
                             isTaskOverdue = false,
                             isCompleted = false,
-                        )
+                        ),
                     ),
                 ),
                 awaitItem(),
@@ -94,37 +92,13 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
+        createViewModel().uiState.test {
             awaitItem()
             taskRepository.tasks.send(listOf(task))
 
             with(awaitItem().tasks.first()) {
                 assertEquals("Yesterday", dueDateText)
                 assertEquals(true, isTaskOverdue)
-            }
-        }
-    }
-
-    @Test
-    fun `uiState marks isDueDateOverdue false when dueDate is in the future`() = runTest {
-        val task = Task(
-            id = 1,
-            title = "Future task",
-            description = "Description",
-            priority = Priority.Low,
-            category = Category.Personal,
-            dueDate = Instant.parse("2026-01-02T12:00:00.00Z"),
-            completedAt = null,
-            createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
-        )
-
-        viewModel.uiState.test {
-            awaitItem()
-            taskRepository.tasks.send(listOf(task))
-
-            with(awaitItem().tasks.first()) {
-                assertEquals("Tomorrow", dueDateText)
-                assertEquals(false, isTaskOverdue)
             }
         }
     }
@@ -142,7 +116,7 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
+        createViewModel().uiState.test {
             awaitItem()
             taskRepository.tasks.send(listOf(task))
 
@@ -155,28 +129,29 @@ class HomeViewModelTest {
 
     @Test
     fun `TaskClicked event navigates to TaskDetailScreen`() = runTest {
-        viewModel.test {
-            val task = HomeFixtures.tasks.first().copy(id = 42)
-            onUiEvent(HomeUiEvent.TaskClicked(task))
+        createViewModel().test {
+            val task = TasksFixtures.tasks.first().copy(id = 42)
+            onUiEvent(TasksUiEvent.TaskClicked(task))
 
             assertEquals(TaskDetailScreen(task.id), navigator.screens.awaitItem())
         }
     }
 
     @Test
-    fun `NewTaskClicked event navigate EditTaskScreen`() = runTest {
-        viewModel.test {
-            onUiEvent(HomeUiEvent.NewTaskClicked)
-            assertEquals(EditTaskScreen(null), navigator.screens.awaitItem())
+    fun `TaskCheckboxToggled on incomplete task calls markTaskCompleted`() = runTest {
+        createViewModel().test {
+            val task = TasksFixtures.tasks.first().copy(id = 7, isCompleted = false)
+            onUiEvent(TasksUiEvent.TaskCheckboxToggled(task))
+            assertEquals(task.id, taskRepository.markTaskCompletedCalls.awaitItem())
         }
     }
 
     @Test
-    fun `TaskCheckboxToggled on incomplete task calls markTaskCompleted`() = runTest {
-        viewModel.test {
-            val task = HomeFixtures.tasks.first().copy(id = 7, isCompleted = false)
-            onUiEvent(HomeUiEvent.TaskCheckboxToggled(task))
-            assertEquals(task.id, taskRepository.markTaskCompletedCalls.awaitItem())
+    fun `TaskCheckboxToggled on completed task calls unmarkTaskCompleted`() = runTest {
+        createViewModel().test {
+            val task = TasksFixtures.tasks.first().copy(id = 7, isCompleted = true)
+            onUiEvent(TasksUiEvent.TaskCheckboxToggled(task))
+            assertEquals(task.id, taskRepository.unmarkTaskCompletedCalls.awaitItem())
         }
     }
 }

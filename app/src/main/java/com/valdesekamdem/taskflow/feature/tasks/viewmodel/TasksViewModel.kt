@@ -1,22 +1,52 @@
 package com.valdesekamdem.taskflow.feature.tasks.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
+import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
+import com.valdesekamdem.taskflow.feature.tasks.viewmodel.TasksUiEvent.TaskCheckboxToggled
+import com.valdesekamdem.taskflow.feature.tasks.viewmodel.TasksUiEvent.TaskClicked
+import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
+import com.valdesekamdem.taskflow.ui.model.toTaskUiModels
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import java.time.ZoneId
 import javax.inject.Inject
-
-data object TasksUiState
-
-sealed interface TasksUiEvent
+import kotlin.time.Clock
 
 @HiltViewModel
-class TasksViewModel @Inject constructor() : ViewModel(), StateHolder<TasksUiState, TasksUiEvent> {
+class TasksViewModel @Inject constructor(
+    private val navigator: Navigator,
+    private val taskRepository: TaskRepository,
+    private val clock: Clock,
+    zoneId: ZoneId,
+) : ViewModel(), StateHolder<TasksUiState, TasksUiEvent> {
 
-    override val uiState: StateFlow<TasksUiState> =
-        MutableStateFlow(TasksUiState).asStateFlow()
+    private val _uiState = MutableStateFlow(TasksUiState())
 
-    override fun onUiEvent(event: TasksUiEvent) = Unit
+    override val uiState: StateFlow<TasksUiState> = combine(
+        _uiState,
+        taskRepository.getTasks(),
+    ) { state, tasks ->
+        state.copy(tasks = tasks.toTaskUiModels(clock.now(), zoneId))
+    }.stateInWhileSubscribed(_uiState.value)
+
+    override fun onUiEvent(event: TasksUiEvent) {
+        when (event) {
+            is TaskClicked -> navigator.goTo(TaskDetailScreen(event.task.id))
+
+            is TaskCheckboxToggled -> viewModelScope.launch {
+                if (event.task.isCompleted) {
+                    taskRepository.unmarkTaskCompleted(event.task.id)
+                } else {
+                    taskRepository.markTaskCompleted(event.task.id)
+                }
+            }
+        }
+    }
 }

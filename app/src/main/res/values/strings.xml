@@ -42,7 +42,6 @@
     <string name="task_detail_unmark_complete">Unmark complete</string>
 
     <string name="tasks_title">All tasks</string>
-    <string name="tasks_coming_soon">Tasks — coming soon</string>
     <string name="settings_title">Settings</string>
     <string name="settings_coming_soon">Settings — coming soon</string>
 </resources>

@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
-import com.valdesekamdem.taskflow.feature.home.viewmodel.TaskUiModel
+import com.valdesekamdem.taskflow.ui.model.TaskUiModel
 import com.valdesekamdem.taskflow.ui.theme.Spacing
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 import com.valdesekamdem.taskflow.ui.utils.accentColor
@@ -42,7 +42,7 @@ private val ContentIndent = CheckboxSize + Spacing.medium + PriorityDotSize + Sp
 fun TaskCard(
     task: TaskUiModel,
     onClick: () -> Unit,
-    onCompleteClicked: () -> Unit,
+    onCheckboxToggled: () -> Unit,
 ) {
     val mutedColor = MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -59,7 +59,7 @@ fun TaskCard(
             Checkbox(
                 modifier = Modifier.size(CheckboxSize),
                 checked = task.isCompleted,
-                onCheckedChange = if (!task.isCompleted) { _ -> onCompleteClicked() } else null,
+                onCheckedChange = { onCheckboxToggled() },
             )
             Spacer(Modifier.width(Spacing.medium))
             Box(
@@ -135,7 +135,7 @@ fun TaskCardOverduePreview() {
         TaskCard(
             task = HomeFixtures.tasks.first(),
             onClick = {},
-            onCompleteClicked = {},
+            onCheckboxToggled = {},
         )
     }
 }
@@ -147,7 +147,7 @@ fun TaskCardUpcomingPreview() {
         TaskCard(
             task = HomeFixtures.tasks[1],
             onClick = {},
-            onCompleteClicked = {},
+            onCheckboxToggled = {},
         )
     }
 }
@@ -159,7 +159,7 @@ fun TaskCardCompletedPreview() {
         TaskCard(
             task = HomeFixtures.tasks[2],
             onClick = {},
-            onCompleteClicked = {},
+            onCheckboxToggled = {},
         )
     }
 }

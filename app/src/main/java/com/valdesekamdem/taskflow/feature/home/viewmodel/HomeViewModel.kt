@@ -3,17 +3,16 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.valdesekamdem.taskflow.core.clock.utils.toMonthDay
-import com.valdesekamdem.taskflow.core.clock.utils.toRelativeDateText
-import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClicked
+import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCheckboxToggled
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskClicked
-import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCompleteClicked
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
+import com.valdesekamdem.taskflow.ui.model.toTaskUiModels
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 import java.time.ZoneId
 import javax.inject.Inject
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -56,22 +54,11 @@ class HomeViewModel @Inject constructor(
                 screen = EditTaskScreen(null)
             )
 
-            is TaskCompleteClicked -> viewModelScope.launch {
-                taskRepository.markTaskCompleted(event.task.id)
+            is TaskCheckboxToggled -> viewModelScope.launch {
+                if (!event.task.isCompleted) {
+                    taskRepository.markTaskCompleted(event.task.id)
+                }
             }
         }
     }
 }
-
-private fun List<Task>.toTaskUiModels(now: Instant, zoneId: ZoneId) = map { it.toTaskUiModel(now, zoneId) }
-
-private fun Task.toTaskUiModel(now: Instant, zoneId: ZoneId) = TaskUiModel(
-    id = id,
-    title = title,
-    description = description,
-    priority = priority,
-    category = category.name,
-    dueDateText = dueDate?.toRelativeDateText(now, zoneId) ?: "",
-    isTaskOverdue = dueDate?.let { it < now } ?: false,
-    isCompleted = completedAt != null,
-)

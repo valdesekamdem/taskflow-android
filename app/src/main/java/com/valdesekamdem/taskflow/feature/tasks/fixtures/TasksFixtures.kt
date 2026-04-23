@@ -1,10 +1,10 @@
-package com.valdesekamdem.taskflow.feature.home.fixtures
+package com.valdesekamdem.taskflow.feature.tasks.fixtures
 
 import com.valdesekamdem.taskflow.core.model.Priority
-import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiState
+import com.valdesekamdem.taskflow.feature.tasks.viewmodel.TasksUiState
 import com.valdesekamdem.taskflow.ui.model.TaskUiModel
 
-object HomeFixtures {
+object TasksFixtures {
     val tasks = listOf(
         TaskUiModel(
             id = 1,
@@ -38,5 +38,5 @@ object HomeFixtures {
         ),
     )
 
-    val homeUiState = HomeUiState(todayDate = "March 28", tasks = tasks)
+    val tasksUiState = TasksUiState(tasks = tasks)
 }

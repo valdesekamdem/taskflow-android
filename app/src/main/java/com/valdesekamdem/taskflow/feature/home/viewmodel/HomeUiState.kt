@@ -1,19 +1,8 @@
 package com.valdesekamdem.taskflow.feature.home.viewmodel
 
-import com.valdesekamdem.taskflow.core.model.Priority
+import com.valdesekamdem.taskflow.ui.model.TaskUiModel
 
 data class HomeUiState(
     val todayDate: String,
     val tasks: List<TaskUiModel> = emptyList(),
-)
-
-data class TaskUiModel(
-    val id: Int,
-    val title: String,
-    val description: String,
-    val priority: Priority,
-    val category: String,
-    val dueDateText: String,
-    val isTaskOverdue: Boolean,
-    val isCompleted: Boolean,
 )
