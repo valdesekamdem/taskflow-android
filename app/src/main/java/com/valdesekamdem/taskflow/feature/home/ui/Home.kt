@@ -29,7 +29,7 @@ import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCompleteClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiState
-import com.valdesekamdem.taskflow.ui.components.topappbar.LevelOneTopAppBar
+import com.valdesekamdem.taskflow.ui.components.topappbar.MainTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.Spacing
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 
@@ -40,7 +40,7 @@ fun Home(
 ) {
     Scaffold(
         topBar = {
-            LevelOneTopAppBar(
+            MainTopAppBar(
                 surtitle = uiState.todayDate,
                 title = stringResource(R.string.home_title),
                 actions = {

@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiEvent
 import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiState
-import com.valdesekamdem.taskflow.ui.components.topappbar.LevelOneTopAppBar
+import com.valdesekamdem.taskflow.ui.components.topappbar.MainTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 
 @Composable
@@ -23,7 +23,7 @@ fun Settings(
 ) {
     Scaffold(
         topBar = {
-            LevelOneTopAppBar(title = stringResource(R.string.settings_title))
+            MainTopAppBar(title = stringResource(R.string.settings_title))
         },
     ) { innerPadding ->
         Box(

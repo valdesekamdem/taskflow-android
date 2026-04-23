@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.feature.tasks.viewmodel.TasksUiEvent
 import com.valdesekamdem.taskflow.feature.tasks.viewmodel.TasksUiState
-import com.valdesekamdem.taskflow.ui.components.topappbar.LevelOneTopAppBar
+import com.valdesekamdem.taskflow.ui.components.topappbar.MainTopAppBar
 import com.valdesekamdem.taskflow.ui.theme.TaskflowTheme
 
 @Composable
@@ -23,7 +23,7 @@ fun Tasks(
 ) {
     Scaffold(
         topBar = {
-            LevelOneTopAppBar(title = stringResource(R.string.tasks_title))
+            MainTopAppBar(title = stringResource(R.string.tasks_title))
         },
     ) { innerPadding ->
         Box(
