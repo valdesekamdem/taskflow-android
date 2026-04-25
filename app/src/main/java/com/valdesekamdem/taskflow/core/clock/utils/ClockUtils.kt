@@ -37,3 +37,11 @@ fun Long.fromUtcToInstant(zoneId: ZoneId): Instant {
         .toInstant()
         .toKotlinInstant()
 }
+
+fun Instant.atStartOfDay(zoneId: ZoneId): Instant {
+    return this.toJavaInstant().atZone(zoneId)
+        .toLocalDate()
+        .atStartOfDay(zoneId)
+        .toInstant()
+        .toKotlinInstant()
+}

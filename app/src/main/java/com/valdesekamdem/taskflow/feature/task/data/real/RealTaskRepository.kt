@@ -1,11 +1,13 @@
 package com.valdesekamdem.taskflow.feature.task.data.real
 
+import androidx.room.RoomRawQuery
 import com.valdesekamdem.taskflow.core.database.dao.TaskDao
 import com.valdesekamdem.taskflow.core.database.model.TaskEntity
 import com.valdesekamdem.taskflow.core.database.model.toTask
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -38,6 +40,14 @@ class RealTaskRepository @Inject constructor(
 
     override fun getTasks(): Flow<List<Task>> {
         return taskDao.getAll().map { taskEntities ->
+            taskEntities.map { it.toTask() }
+        }
+    }
+
+    override fun getTasks(filter: TaskFilter): Flow<List<Task>> {
+        val rawQuery = RoomRawQuery(sql = filter.toQuery())
+
+        return taskDao.getTasks(rawQuery).map { taskEntities ->
             taskEntities.map { it.toTask() }
         }
     }

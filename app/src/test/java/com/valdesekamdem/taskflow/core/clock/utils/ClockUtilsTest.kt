@@ -101,6 +101,16 @@ class ClockUtilsTest {
     }
 
     @Test
+    fun `atStartOfDay normalizes time to midnight in the given zone`() {
+        val instant = Instant.parse("2026-01-15T14:30:00.00Z")
+
+        assertEquals(
+            Instant.parse("2026-01-15T05:00:00.00Z"),
+            instant.atStartOfDay(ZoneId.of("America/Toronto")),
+        )
+    }
+
+    @Test
     fun `fromUtcToInstant maps epoch millis to start of day in the given zone`() {
         // The UTC date of the epoch millis is January 15. Toronto (UTC-5 in January) starts
         // that calendar day 5 hours later in UTC terms.

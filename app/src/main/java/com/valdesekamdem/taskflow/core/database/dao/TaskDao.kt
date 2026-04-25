@@ -3,6 +3,8 @@ package com.valdesekamdem.taskflow.core.database.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import com.valdesekamdem.taskflow.core.database.model.TaskEntity
 import com.valdesekamdem.taskflow.core.model.Category
 import com.valdesekamdem.taskflow.core.model.Priority
@@ -13,6 +15,9 @@ import kotlin.time.Instant
 interface TaskDao {
     @Insert
     suspend fun insertAll(vararg tasks: TaskEntity)
+
+    @RawQuery(observedEntities = [TaskEntity::class])
+    fun getTasks(query: RoomRawQuery): Flow<List<TaskEntity>>
 
     @Query("SELECT * FROM tasks")
     fun getAll(): Flow<List<TaskEntity>>
