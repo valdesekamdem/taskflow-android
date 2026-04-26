@@ -7,6 +7,7 @@
 
     <string name="add_new_task_button_description">Add a new task</string>
     <string name="home_title">Home</string>
+    <string name="home_overdue_title">OVERDUE</string>
 
     <string name="edit_task_title_label">TITLE</string>
     <string name="edit_task_title_placeholder">What needs to be done?</string>

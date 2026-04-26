@@ -1,7 +1,9 @@
 package com.valdesekamdem.taskflow.feature.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valdesekamdem.taskflow.R
@@ -65,9 +68,20 @@ fun Home(
                 .padding(innerPadding)
                 .fillMaxSize(),
         ) {
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.home_overdue_title),
+                    count = uiState.overdueTasks.size,
+                    modifier = Modifier.padding(
+                        horizontal = Spacing.medium,
+                        vertical = Spacing.small,
+                    ),
+                )
+            }
+
             itemsIndexed(
-                items = uiState.tasks,
-                key = { _, task -> task.hashCode() },
+                items = uiState.overdueTasks,
+                key = { _, task -> task.id },
             ) { index, task ->
                 if (index > 0) {
                     HorizontalDivider(
@@ -82,6 +96,31 @@ fun Home(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    count: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+
+        Text(
+            text = "$count",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

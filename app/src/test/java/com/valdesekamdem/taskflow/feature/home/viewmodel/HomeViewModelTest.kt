@@ -1,5 +1,6 @@
 package com.valdesekamdem.taskflow.feature.home.viewmodel
 
+import app.cash.turbine.awaitItem
 import app.cash.turbine.test
 import com.valdesekamdem.taskflow.core.clock.fakes.FakeClock
 import com.valdesekamdem.taskflow.core.clock.utils.DefaultLocaleRule
@@ -8,6 +9,8 @@ import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
+import com.valdesekamdem.taskflow.feature.task.data.api.filter.DateFilter
+import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
@@ -44,7 +47,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `uiState maps repository tasks while preserving injected todayDate`() = runTest {
+    fun `uiState maps repository due tasks while preserving injected todayDate`() = runTest {
         val task = Task(
             id = 1,
             title = "Very rapid test",
@@ -58,12 +61,12 @@ class HomeViewModelTest {
         viewModel.uiState.test {
             assertEquals(HomeUiState(todayDate = "January 01"), awaitItem())
 
-            taskRepository.tasks.send(listOf(task))
+            taskRepository.filteredTasks.send(listOf(task))
 
             assertEquals(
                 HomeUiState(
                     todayDate = "January 01",
-                    tasks = listOf(
+                    overdueTasks = listOf(
                         TaskUiModel(
                             id = 1,
                             title = "Very rapid test",
@@ -77,6 +80,13 @@ class HomeViewModelTest {
                     ),
                 ),
                 awaitItem(),
+            )
+            assertEquals(
+                TaskFilter(
+                    dueDate = DateFilter.Before(Instant.parse("2026-01-01T05:00:00.00Z")),
+                    isCompleted = false,
+                ),
+                taskRepository.getTasksFilterCalls.awaitItem(),
             )
         }
     }
@@ -96,9 +106,9 @@ class HomeViewModelTest {
 
         viewModel.uiState.test {
             awaitItem()
-            taskRepository.tasks.send(listOf(task))
+            taskRepository.filteredTasks.send(listOf(task))
 
-            with(awaitItem().tasks.first()) {
+            with(awaitItem().overdueTasks.first()) {
                 assertEquals("Yesterday", dueDateText)
                 assertEquals(true, isTaskOverdue)
             }
@@ -120,9 +130,9 @@ class HomeViewModelTest {
 
         viewModel.uiState.test {
             awaitItem()
-            taskRepository.tasks.send(listOf(task))
+            taskRepository.filteredTasks.send(listOf(task))
 
-            with(awaitItem().tasks.first()) {
+            with(awaitItem().overdueTasks.first()) {
                 assertEquals("Tomorrow", dueDateText)
                 assertEquals(false, isTaskOverdue)
             }
@@ -144,9 +154,9 @@ class HomeViewModelTest {
 
         viewModel.uiState.test {
             awaitItem()
-            taskRepository.tasks.send(listOf(task))
+            taskRepository.filteredTasks.send(listOf(task))
 
-            with(awaitItem().tasks.first()) {
+            with(awaitItem().overdueTasks.first()) {
                 assertEquals("", dueDateText)
                 assertEquals(false, isTaskOverdue)
             }

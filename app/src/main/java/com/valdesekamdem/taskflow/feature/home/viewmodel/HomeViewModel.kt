@@ -2,6 +2,7 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.valdesekamdem.taskflow.core.clock.utils.atStartOfDay
 import com.valdesekamdem.taskflow.core.clock.utils.toMonthDay
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
@@ -9,6 +10,8 @@ import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClic
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCheckboxToggled
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskClicked
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.task.data.api.filter.DateFilter
+import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.feature.utils.stateInWhileSubscribed
@@ -33,15 +36,21 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(
         HomeUiState(
             todayDate = clock.now().toMonthDay(zoneId),
-            tasks = emptyList(),
+            overdueTasks = emptyList(),
         )
+    )
+
+    val todayStartOfDay = clock.now().atStartOfDay(zoneId)
+    val overdueTasksFilter = TaskFilter(
+        dueDate = DateFilter.Before(todayStartOfDay),
+        isCompleted = false,
     )
 
     override val uiState: StateFlow<HomeUiState> = combine(
         _uiState,
-        taskRepository.getTasks(),
-    ) { state, tasks ->
-        state.copy(tasks = tasks.toTaskUiModels(clock.now(), zoneId))
+        taskRepository.getTasks(overdueTasksFilter),
+    ) { state, dueTasks ->
+        state.copy(overdueTasks = dueTasks.toTaskUiModels(clock.now(), zoneId))
     }.stateInWhileSubscribed(_uiState.value)
 
     override fun onUiEvent(event: HomeUiEvent) {
