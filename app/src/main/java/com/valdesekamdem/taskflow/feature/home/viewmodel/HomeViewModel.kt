@@ -7,6 +7,7 @@ import com.valdesekamdem.taskflow.core.clock.utils.toMonthDay
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClicked
+import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.OverdueSectionCaptionClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCheckboxToggled
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskClicked
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
@@ -20,10 +21,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 import javax.inject.Inject
 import kotlin.time.Clock
+
+private const val DEFAULT_VISIBLE_TASKS = 2
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -32,26 +36,42 @@ class HomeViewModel @Inject constructor(
     private val clock: Clock,
     zoneId: ZoneId,
 ) : ViewModel(), StateHolder<HomeUiState, HomeUiEvent> {
-
     private val _uiState = MutableStateFlow(
         HomeUiState(
             todayDate = clock.now().toMonthDay(zoneId),
             overdueTasks = emptyList(),
+            maxVisibleTasks = DEFAULT_VISIBLE_TASKS,
         )
     )
 
     val todayStartOfDay = clock.now().atStartOfDay(zoneId)
+
     val overdueTasksFilter = TaskFilter(
         dueDate = DateFilter.Before(todayStartOfDay),
         isCompleted = false,
     )
+    val overdueTasksFlow = taskRepository
+        .getTasks(filter = overdueTasksFilter)
+        .map { it.toTaskUiModels(clock.now(), zoneId) }
 
     override val uiState: StateFlow<HomeUiState> = combine(
         _uiState,
-        taskRepository.getTasks(overdueTasksFilter),
-    ) { state, dueTasks ->
-        state.copy(overdueTasks = dueTasks.toTaskUiModels(clock.now(), zoneId))
+        overdueTasksFlow,
+    ) { state, overdueTasks ->
+        state.copy(overdueTasks = overdueTasks)
     }.stateInWhileSubscribed(_uiState.value)
+
+    init {
+        viewModelScope.launch {
+            // Reset the expanded state when the number of tasks drops below the default
+            // This prevent the list to open expanded immediately without the user asking the next time tasks are added
+            overdueTasksFlow.collect { tasks ->
+                if (tasks.size <= DEFAULT_VISIBLE_TASKS) {
+                    _uiState.value = _uiState.value.copy(isOverdueTasksExpanded = false)
+                }
+            }
+        }
+    }
 
     override fun onUiEvent(event: HomeUiEvent) {
         when (event) {
@@ -67,6 +87,12 @@ class HomeViewModel @Inject constructor(
                 if (!event.task.isCompleted) {
                     taskRepository.markTaskCompleted(event.task.id)
                 }
+            }
+
+            OverdueSectionCaptionClicked -> {
+                _uiState.value = _uiState.value.copy(
+                    isOverdueTasksExpanded = !_uiState.value.isOverdueTasksExpanded
+                )
             }
         }
     }

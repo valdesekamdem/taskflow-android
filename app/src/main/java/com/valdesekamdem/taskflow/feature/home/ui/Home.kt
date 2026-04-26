@@ -1,13 +1,16 @@
 package com.valdesekamdem.taskflow.feature.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DividerDefaults
@@ -63,37 +66,63 @@ fun Home(
         },
         floatingActionButton = { NewTaskFloatingAction { onUiEvent(NewTaskClicked) } }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
+        Column(
+            modifier = Modifier.padding(innerPadding)
         ) {
-            item {
-                SectionHeader(
-                    title = stringResource(R.string.home_overdue_title),
-                    count = uiState.overdueTasks.size,
-                    modifier = Modifier.padding(
-                        horizontal = Spacing.medium,
-                        vertical = Spacing.small,
-                    ),
-                )
+            OverdueTasksSection(uiState, onUiEvent)
+        }
+    }
+}
+
+@Composable
+private fun OverdueTasksSection(
+    uiState: HomeUiState,
+    onUiEvent: (HomeUiEvent) -> Unit
+) {
+    val visibleTasks = with(uiState) {
+        if (isOverdueTasksExpanded) overdueTasks else overdueTasks.take(maxVisibleTasks)
+    }
+    val hiddenTasksSize = uiState.overdueTasks.size - uiState.maxVisibleTasks
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        item {
+            SectionHeader(
+                title = stringResource(R.string.home_overdue_title),
+                count = uiState.overdueTasks.size,
+                modifier = Modifier.padding(
+                    horizontal = Spacing.medium,
+                    vertical = Spacing.small,
+                ),
+            )
+        }
+
+        itemsIndexed(
+            items = visibleTasks,
+            key = { _, task -> task.id },
+        ) { index, task ->
+            if (index > 0) {
+                Divider()
             }
 
-            itemsIndexed(
-                items = uiState.overdueTasks,
-                key = { _, task -> task.id },
-            ) { index, task ->
-                if (index > 0) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = Spacing.medium),
-                        color = DividerDefaults.color.copy(0.6f),
-                    )
+            TaskCard(
+                task = task,
+                onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) },
+                onCheckboxToggled = { onUiEvent(TaskCheckboxToggled(task)) },
+                modifier = Modifier.animateItem(),
+            )
+        }
+
+        if (uiState.overdueTasks.size > uiState.maxVisibleTasks) {
+            item {
+                SectionCaption(
+                    isExpanded = uiState.isOverdueTasksExpanded,
+                    maxVisibleTasks = uiState.maxVisibleTasks,
+                    hiddenOverdueTasksSize = hiddenTasksSize
+                ) {
+                    onUiEvent(HomeUiEvent.OverdueSectionCaptionClicked)
                 }
-                TaskCard(
-                    task = task,
-                    onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) },
-                    onCheckboxToggled = { onUiEvent(TaskCheckboxToggled(task)) },
-                )
             }
         }
     }
@@ -120,6 +149,44 @@ private fun SectionHeader(
             text = "$count",
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun LazyItemScope.Divider() {
+    HorizontalDivider(
+        modifier = Modifier
+            .padding(horizontal = Spacing.medium)
+            .animateItem(),
+        color = DividerDefaults.color.copy(0.6f),
+    )
+}
+
+@Composable
+private fun LazyItemScope.SectionCaption(
+    isExpanded: Boolean,
+    maxVisibleTasks: Int,
+    hiddenOverdueTasksSize: Int,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .animateItem(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            modifier = Modifier
+                .clickable { onClick() }
+                .padding(horizontal = Spacing.medium, vertical = Spacing.small),
+            text = if (isExpanded) {
+                stringResource(R.string.home_show_only_max, maxVisibleTasks)
+            } else {
+                stringResource(R.string.home_show_more, hiddenOverdueTasksSize)
+            },
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
         )
     }
 }

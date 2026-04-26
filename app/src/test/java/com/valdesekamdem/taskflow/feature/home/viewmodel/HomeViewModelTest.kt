@@ -9,12 +9,14 @@ import com.valdesekamdem.taskflow.core.model.Priority
 import com.valdesekamdem.taskflow.core.model.Task
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
+import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.OverdueSectionCaptionClicked
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.DateFilter
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.screens.TaskDetailScreen
 import com.valdesekamdem.taskflow.ui.model.TaskUiModel
+import com.valdesekamdem.taskflow.utils.skipItem
 import com.valdesekamdem.taskflow.utils.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -32,7 +34,7 @@ class HomeViewModelTest {
     private val clock = FakeClock()
     private val zoneId = ZoneId.of("America/Toronto")
 
-    private val viewModel = HomeViewModel(
+    private fun createViewModel() = HomeViewModel(
         navigator = navigator,
         taskRepository = taskRepository,
         clock = clock,
@@ -41,8 +43,23 @@ class HomeViewModelTest {
 
     @Test
     fun `uiState initializes todayDate from injected clock`() = runTest {
-        viewModel.test {
-            assertEquals(HomeUiState(todayDate = "January 01"), uiState.value)
+        createViewModel().test {
+            assertEquals(HomeUiState(todayDate = "January 01", maxVisibleTasks = 2), uiState.value)
+        }
+    }
+
+    @Test
+    fun `getTasks is called with filter for overdue incomplete tasks`() = runTest {
+        createViewModel().uiState.test {
+            awaitItem()
+            assertEquals(
+                TaskFilter(
+                    dueDate = DateFilter.Before(Instant.parse("2026-01-01T05:00:00.00Z")),
+                    isCompleted = false,
+                ),
+                taskRepository.getTasksFilterCalls.awaitItem(),
+            )
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -58,10 +75,10 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
-            assertEquals(HomeUiState(todayDate = "January 01"), awaitItem())
+        createViewModel().uiState.test {
+            assertEquals(HomeUiState(todayDate = "January 01", maxVisibleTasks = 2), awaitItem())
 
-            taskRepository.filteredTasks.send(listOf(task))
+            taskRepository.filteredTasks.emit(listOf(task))
 
             assertEquals(
                 HomeUiState(
@@ -78,15 +95,9 @@ class HomeViewModelTest {
                             isCompleted = false,
                         )
                     ),
+                    maxVisibleTasks = 2,
                 ),
                 awaitItem(),
-            )
-            assertEquals(
-                TaskFilter(
-                    dueDate = DateFilter.Before(Instant.parse("2026-01-01T05:00:00.00Z")),
-                    isCompleted = false,
-                ),
-                taskRepository.getTasksFilterCalls.awaitItem(),
             )
         }
     }
@@ -104,9 +115,9 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
+        createViewModel().uiState.test {
             awaitItem()
-            taskRepository.filteredTasks.send(listOf(task))
+            taskRepository.filteredTasks.emit(listOf(task))
 
             with(awaitItem().overdueTasks.first()) {
                 assertEquals("Yesterday", dueDateText)
@@ -128,9 +139,9 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
+        createViewModel().uiState.test {
             awaitItem()
-            taskRepository.filteredTasks.send(listOf(task))
+            taskRepository.filteredTasks.emit(listOf(task))
 
             with(awaitItem().overdueTasks.first()) {
                 assertEquals("Tomorrow", dueDateText)
@@ -152,9 +163,9 @@ class HomeViewModelTest {
             createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
         )
 
-        viewModel.uiState.test {
+        createViewModel().uiState.test {
             awaitItem()
-            taskRepository.filteredTasks.send(listOf(task))
+            taskRepository.filteredTasks.emit(listOf(task))
 
             with(awaitItem().overdueTasks.first()) {
                 assertEquals("", dueDateText)
@@ -164,8 +175,62 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `OverdueSectionCaptionClicked expands the overdue section`() = runTest {
+        val task = Task(
+            id = 1,
+            title = "Task",
+            description = "",
+            priority = Priority.High,
+            category = Category.Work,
+            completedAt = null,
+            createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
+        )
+        val viewModel = createViewModel()
+        viewModel.uiState.test {
+            skipItem("initial state")
+            taskRepository.filteredTasks.emit(listOf(task))
+            skipItem("tasks loaded")
+
+            viewModel.onUiEvent(OverdueSectionCaptionClicked)
+
+            with(awaitItem()) {
+                assertEquals(true, isOverdueTasksExpanded)
+            }
+        }
+    }
+
+    @Test
+    fun `OverdueSectionCaptionClicked collapses the overdue section when already expanded`() =
+        runTest {
+            val task = Task(
+                id = 1,
+                title = "Task",
+                description = "",
+                priority = Priority.High,
+                category = Category.Work,
+                completedAt = null,
+                createdAt = Instant.parse("2026-01-01T10:00:00.00Z"),
+            )
+            val viewModel = createViewModel()
+            viewModel.uiState.test {
+                skipItem("initial state")
+                taskRepository.filteredTasks.emit(listOf(task))
+                skipItem("tasks loaded")
+
+                viewModel.onUiEvent(OverdueSectionCaptionClicked)
+                skipItem("expanded state")
+
+                viewModel.onUiEvent(OverdueSectionCaptionClicked)
+
+                with(awaitItem()) {
+                    assertEquals(false, isOverdueTasksExpanded)
+            }
+        }
+    }
+
+    @Test
     fun `TaskClicked event navigates to TaskDetailScreen`() = runTest {
-        viewModel.test {
+        createViewModel().test {
             val task = HomeFixtures.tasks.first().copy(id = 42)
             onUiEvent(HomeUiEvent.TaskClicked(task))
 
@@ -175,7 +240,7 @@ class HomeViewModelTest {
 
     @Test
     fun `NewTaskClicked event navigate EditTaskScreen`() = runTest {
-        viewModel.test {
+        createViewModel().test {
             onUiEvent(HomeUiEvent.NewTaskClicked)
             assertEquals(EditTaskScreen(null), navigator.screens.awaitItem())
         }
@@ -183,7 +248,7 @@ class HomeViewModelTest {
 
     @Test
     fun `TaskCheckboxToggled on incomplete task calls markTaskCompleted`() = runTest {
-        viewModel.test {
+        createViewModel().test {
             val task = HomeFixtures.tasks.first().copy(id = 7, isCompleted = false)
             onUiEvent(HomeUiEvent.TaskCheckboxToggled(task))
             assertEquals(task.id, taskRepository.markTaskCompletedCalls.awaitItem())

@@ -43,11 +43,12 @@ fun TaskCard(
     task: TaskUiModel,
     onClick: () -> Unit,
     onCheckboxToggled: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val mutedColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = Spacing.medium, vertical = Spacing.medium),

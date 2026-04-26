@@ -10,6 +10,7 @@ import com.valdesekamdem.taskflow.core.navigation.api.Back
 import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskModel
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
+import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
 import com.valdesekamdem.taskflow.feature.task.screens.EditTaskScreen
 import com.valdesekamdem.taskflow.feature.task.viewmodel.EditTaskUiState.EditTaskFormUiModel
@@ -182,6 +183,7 @@ class EditTaskViewModelTest {
                 throw RuntimeException("Database error")
 
             override fun getTasks(): Flow<List<Task>> = emptyFlow()
+            override fun getTasks(filter: TaskFilter): Flow<List<Task>> = emptyFlow()
             override fun getTask(id: Int): Flow<Task?> = emptyFlow()
             override suspend fun markTaskCompleted(id: Int) {}
             override suspend fun unmarkTaskCompleted(id: Int) {}

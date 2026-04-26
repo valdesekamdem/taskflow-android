@@ -5,4 +5,6 @@ import com.valdesekamdem.taskflow.ui.model.TaskUiModel
 data class HomeUiState(
     val todayDate: String,
     val overdueTasks: List<TaskUiModel> = emptyList(),
+    val isOverdueTasksExpanded: Boolean = false,
+    val maxVisibleTasks: Int,
 )
