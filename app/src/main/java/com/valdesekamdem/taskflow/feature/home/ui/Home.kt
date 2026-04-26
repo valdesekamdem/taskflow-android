@@ -4,13 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DividerDefaults
@@ -66,16 +67,23 @@ fun Home(
         },
         floatingActionButton = { NewTaskFloatingAction { onUiEvent(NewTaskClicked) } }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding)
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
         ) {
-            OverdueTasksSection(uiState, onUiEvent)
+            overdueTasksSection(uiState, onUiEvent)
+
+            item {
+                Box(modifier = Modifier.size(Spacing.medium))
+            }
+
+            todayTasksSection(uiState, onUiEvent)
         }
     }
 }
 
-@Composable
-private fun OverdueTasksSection(
+private fun LazyListScope.overdueTasksSection(
     uiState: HomeUiState,
     onUiEvent: (HomeUiEvent) -> Unit
 ) {
@@ -84,45 +92,90 @@ private fun OverdueTasksSection(
     }
     val hiddenTasksSize = uiState.overdueTasks.size - uiState.maxVisibleTasks
 
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    item {
+        SectionHeader(
+            title = stringResource(R.string.home_overdue_title),
+            count = uiState.overdueTasks.size,
+            modifier = Modifier.padding(
+                horizontal = Spacing.medium,
+                vertical = Spacing.small,
+            ),
+        )
+    }
+
+    itemsIndexed(
+        items = visibleTasks,
+        key = { _, task -> task.id },
+    ) { index, task ->
+        if (index > 0) {
+            Divider()
+        }
+
+        TaskCard(
+            task = task,
+            onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) },
+            onCheckboxToggled = { onUiEvent(TaskCheckboxToggled(task)) },
+            modifier = Modifier.animateItem(),
+        )
+    }
+
+    if (uiState.overdueTasks.size > uiState.maxVisibleTasks) {
         item {
-            SectionHeader(
-                title = stringResource(R.string.home_overdue_title),
-                count = uiState.overdueTasks.size,
-                modifier = Modifier.padding(
-                    horizontal = Spacing.medium,
-                    vertical = Spacing.small,
-                ),
-            )
-        }
-
-        itemsIndexed(
-            items = visibleTasks,
-            key = { _, task -> task.id },
-        ) { index, task ->
-            if (index > 0) {
-                Divider()
+            SectionCaption(
+                isExpanded = uiState.isOverdueTasksExpanded,
+                maxVisibleTasks = uiState.maxVisibleTasks,
+                hiddenOverdueTasksSize = hiddenTasksSize
+            ) {
+                onUiEvent(HomeUiEvent.OverdueSectionCaptionClicked)
             }
+        }
+    }
+}
 
-            TaskCard(
-                task = task,
-                onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) },
-                onCheckboxToggled = { onUiEvent(TaskCheckboxToggled(task)) },
-                modifier = Modifier.animateItem(),
-            )
+private fun LazyListScope.todayTasksSection(
+    uiState: HomeUiState,
+    onUiEvent: (HomeUiEvent) -> Unit
+) {
+    val visibleTasks = with(uiState) {
+        if (isTodayTasksExpanded) todayTasks else todayTasks.take(maxVisibleTasks)
+    }
+    val hiddenTasksSize = uiState.todayTasks.size - uiState.maxVisibleTasks
+
+    item {
+        SectionHeader(
+            title = stringResource(R.string.home_today_title),
+            count = uiState.todayTasks.size,
+            modifier = Modifier.padding(
+                horizontal = Spacing.medium,
+                vertical = Spacing.small,
+            ),
+        )
+    }
+
+    itemsIndexed(
+        items = visibleTasks,
+        key = { _, task -> task.id },
+    ) { index, task ->
+        if (index > 0) {
+            Divider()
         }
 
-        if (uiState.overdueTasks.size > uiState.maxVisibleTasks) {
-            item {
-                SectionCaption(
-                    isExpanded = uiState.isOverdueTasksExpanded,
-                    maxVisibleTasks = uiState.maxVisibleTasks,
-                    hiddenOverdueTasksSize = hiddenTasksSize
-                ) {
-                    onUiEvent(HomeUiEvent.OverdueSectionCaptionClicked)
-                }
+        TaskCard(
+            task = task,
+            onClick = { onUiEvent(HomeUiEvent.TaskClicked(task)) },
+            onCheckboxToggled = { onUiEvent(TaskCheckboxToggled(task)) },
+            modifier = Modifier.animateItem(),
+        )
+    }
+
+    if (uiState.todayTasks.size > uiState.maxVisibleTasks) {
+        item {
+            SectionCaption(
+                isExpanded = uiState.isTodayTasksExpanded,
+                maxVisibleTasks = uiState.maxVisibleTasks,
+                hiddenOverdueTasksSize = hiddenTasksSize
+            ) {
+                onUiEvent(HomeUiEvent.TodaySectionCaptionClicked)
             }
         }
     }
@@ -136,7 +189,7 @@ private fun SectionHeader(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(Spacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.small),
     ) {
         Text(
             text = title,

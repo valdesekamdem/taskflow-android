@@ -41,6 +41,7 @@ object HomeFixtures {
     val homeUiState = HomeUiState(
         todayDate = "March 28",
         overdueTasks = tasks,
+        todayTasks = tasks,
         maxVisibleTasks = 2
     )
 }

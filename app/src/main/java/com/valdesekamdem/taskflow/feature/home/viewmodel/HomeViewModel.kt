@@ -10,6 +10,7 @@ import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.NewTaskClic
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.OverdueSectionCaptionClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCheckboxToggled
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskClicked
+import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TodaySectionCaptionClicked
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.DateFilter
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
@@ -26,6 +27,7 @@ import kotlinx.coroutines.launch
 import java.time.ZoneId
 import javax.inject.Inject
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.days
 
 private const val DEFAULT_VISIBLE_TASKS = 2
 
@@ -54,11 +56,20 @@ class HomeViewModel @Inject constructor(
         .getTasks(filter = overdueTasksFilter)
         .map { it.toTaskUiModels(clock.now(), zoneId) }
 
+    val todayTasksFilter = TaskFilter(
+        dueDate = DateFilter.Between(todayStartOfDay, todayStartOfDay.plus(1.days)),
+        isCompleted = false,
+    )
+    val todayTasksFlow = taskRepository
+        .getTasks(filter = todayTasksFilter)
+        .map { it.toTaskUiModels(clock.now(), zoneId) }
+
     override val uiState: StateFlow<HomeUiState> = combine(
         _uiState,
         overdueTasksFlow,
-    ) { state, overdueTasks ->
-        state.copy(overdueTasks = overdueTasks)
+        todayTasksFlow
+    ) { state, overdueTasks, todayTasks ->
+        state.copy(overdueTasks = overdueTasks, todayTasks = todayTasks)
     }.stateInWhileSubscribed(_uiState.value)
 
     init {
@@ -68,6 +79,13 @@ class HomeViewModel @Inject constructor(
             overdueTasksFlow.collect { tasks ->
                 if (tasks.size <= DEFAULT_VISIBLE_TASKS) {
                     _uiState.value = _uiState.value.copy(isOverdueTasksExpanded = false)
+                }
+            }
+        }
+        viewModelScope.launch {
+            todayTasksFlow.collect { tasks ->
+                if (tasks.size <= DEFAULT_VISIBLE_TASKS) {
+                    _uiState.value = _uiState.value.copy(isTodayTasksExpanded = false)
                 }
             }
         }
@@ -92,6 +110,12 @@ class HomeViewModel @Inject constructor(
             OverdueSectionCaptionClicked -> {
                 _uiState.value = _uiState.value.copy(
                     isOverdueTasksExpanded = !_uiState.value.isOverdueTasksExpanded
+                )
+            }
+
+            TodaySectionCaptionClicked -> {
+                _uiState.value = _uiState.value.copy(
+                    isTodayTasksExpanded = !_uiState.value.isTodayTasksExpanded
                 )
             }
         }

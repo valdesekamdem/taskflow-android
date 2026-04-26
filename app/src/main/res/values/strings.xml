@@ -8,6 +8,7 @@
     <string name="add_new_task_button_description">Add a new task</string>
     <string name="home_title">Home</string>
     <string name="home_overdue_title">OVERDUE</string>
+    <string name="home_today_title">TODAY</string>
     <string name="home_show_more">Show %d more ↓</string>
     <string name="home_show_only_max">Show only %d ↑</string>
 

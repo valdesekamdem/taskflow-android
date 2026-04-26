@@ -10,4 +10,6 @@ sealed interface HomeUiEvent {
     data class TaskCheckboxToggled(val task: TaskUiModel) : HomeUiEvent
 
     data object OverdueSectionCaptionClicked : HomeUiEvent
+
+    data object TodaySectionCaptionClicked : HomeUiEvent
 }
