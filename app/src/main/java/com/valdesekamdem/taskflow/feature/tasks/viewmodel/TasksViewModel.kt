@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.ZoneId
 import javax.inject.Inject
@@ -29,11 +30,15 @@ class TasksViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TasksUiState())
 
+    private val tasksFlow = taskRepository
+        .getTasks()
+        .map { it.toTaskUiModels(clock.now(), zoneId) }
+
     override val uiState: StateFlow<TasksUiState> = combine(
         _uiState,
-        taskRepository.getTasks(),
+        tasksFlow,
     ) { state, tasks ->
-        state.copy(tasks = tasks.toTaskUiModels(clock.now(), zoneId))
+        state.copy(tasks = tasks)
     }.stateInWhileSubscribed(_uiState.value)
 
     override fun onUiEvent(event: TasksUiEvent) {
