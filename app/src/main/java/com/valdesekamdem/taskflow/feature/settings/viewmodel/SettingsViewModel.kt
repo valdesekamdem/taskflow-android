@@ -8,15 +8,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
-data object SettingsUiState
-
 sealed interface SettingsUiEvent
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor() : ViewModel(), StateHolder<SettingsUiState, SettingsUiEvent> {
 
     override val uiState: StateFlow<SettingsUiState> =
-        MutableStateFlow(SettingsUiState).asStateFlow()
+        MutableStateFlow(SettingsUiState()).asStateFlow()
 
     override fun onUiEvent(event: SettingsUiEvent) = Unit
 }
