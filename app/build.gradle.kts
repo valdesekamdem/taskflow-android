@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.turbine)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.datastore.preferences)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.coroutines.test)
