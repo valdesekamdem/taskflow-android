@@ -125,6 +125,9 @@ Flow/StateFlow assertions use **Turbine** (`app.cash.turbine`).
 Tests use `runTest` (coroutines-test) and `@get:Rule` with `DefaultLocaleRule` when locale-sensitive
 formatting is involved.
 
+Always consume all events. Don't add `cancelAndIgnoreRemainingEvents()` to avoid consuming all
+events unless it's explicit asked.
+
 ## Git
 
 - Add new files to VCS

@@ -33,7 +33,7 @@ fun EditTask(
     val submitLabel = if (uiState.isNewTask) {
         stringResource(R.string.edit_task_create_button)
     } else {
-        stringResource(R.string.edit_task_save_button)
+        stringResource(R.string.save)
     }
 
     Scaffold(

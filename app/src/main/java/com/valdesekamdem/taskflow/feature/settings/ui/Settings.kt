@@ -22,6 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.valdesekamdem.taskflow.R
 import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiEvent
+import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiEvent.EditUserNameClicked
+import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiEvent.SaveUserNameClicked
+import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiEvent.UserNameChanged
 import com.valdesekamdem.taskflow.feature.settings.viewmodel.SettingsUiState
 import com.valdesekamdem.taskflow.ui.components.Cell
 import com.valdesekamdem.taskflow.ui.components.topappbar.MainTopAppBar
@@ -53,18 +56,27 @@ fun Settings(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = uiState.monogram.toString(),
+                            text = (uiState.monogram ?: '?').toString(),
                             fontWeight = FontWeight.Bold
                         )
                     }
                 },
-                text = uiState.username,
-                subtext = "Used only on this device",
+                text = uiState.username ?: stringResource(R.string.settings_no_username),
+                subtext = stringResource(R.string.settings_username_subtext),
                 trailingContent = {
-                    TextButton(onClick = {}) {
-                        Text(text = "Edit")
+                    TextButton(onClick = { onUiEvent(EditUserNameClicked) }) {
+                        Text(text = stringResource(R.string.edit))
                     }
                 }
+            )
+        }
+
+        uiState.userNameSheet?.let { state ->
+            EditUserNameSheet(
+                state = state,
+                onDismiss = { onUiEvent(SettingsUiEvent.UserNameSheetDismissed) },
+                onUserNameChanged = { onUiEvent(UserNameChanged(it)) },
+                onSaveUserNameClicked = { onUiEvent(SaveUserNameClicked) }
             )
         }
     }
