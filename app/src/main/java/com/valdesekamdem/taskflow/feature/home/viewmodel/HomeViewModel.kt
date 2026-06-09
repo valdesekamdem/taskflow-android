@@ -3,6 +3,7 @@ package com.valdesekamdem.taskflow.feature.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.valdesekamdem.taskflow.core.clock.utils.atStartOfDay
+import com.valdesekamdem.taskflow.core.clock.utils.isMorning
 import com.valdesekamdem.taskflow.core.clock.utils.toMonthDay
 import com.valdesekamdem.taskflow.core.navigation.api.Navigator
 import com.valdesekamdem.taskflow.core.presentation.StateHolder
@@ -11,6 +12,7 @@ import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.OverdueSect
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskCheckboxToggled
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TaskClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TodaySectionCaptionClicked
+import com.valdesekamdem.taskflow.feature.settings.data.api.SettingsRepository
 import com.valdesekamdem.taskflow.feature.task.data.api.TaskRepository
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.DateFilter
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
@@ -35,16 +37,27 @@ private const val DEFAULT_VISIBLE_TASKS = 2
 class HomeViewModel @Inject constructor(
     private val navigator: Navigator,
     private val taskRepository: TaskRepository,
+    settingsRepository: SettingsRepository,
     private val clock: Clock,
     zoneId: ZoneId,
 ) : ViewModel(), StateHolder<HomeUiState, HomeUiEvent> {
     private val _uiState = MutableStateFlow(
         HomeUiState(
             todayDate = clock.now().toMonthDay(zoneId),
+            title = "",
             overdueTasks = emptyList(),
             maxVisibleTasks = DEFAULT_VISIBLE_TASKS,
         )
     )
+
+    private val titleFlow = settingsRepository.userName.map { username ->
+        buildString {
+            append(if (clock.now().isMorning(zoneId)) "Morning," else "Hi,")
+            if (!username.isNullOrBlank()) {
+                append(" $username.")
+            }
+        }
+    }
 
     val todayStartOfDay = clock.now().atStartOfDay(zoneId)
 
@@ -66,10 +79,11 @@ class HomeViewModel @Inject constructor(
 
     override val uiState: StateFlow<HomeUiState> = combine(
         _uiState,
+        titleFlow,
         overdueTasksFlow,
         todayTasksFlow
-    ) { state, overdueTasks, todayTasks ->
-        state.copy(overdueTasks = overdueTasks, todayTasks = todayTasks)
+    ) { state, title, overdueTasks, todayTasks ->
+        state.copy(title = title, overdueTasks = overdueTasks, todayTasks = todayTasks)
     }.stateInWhileSubscribed(_uiState.value)
 
     init {

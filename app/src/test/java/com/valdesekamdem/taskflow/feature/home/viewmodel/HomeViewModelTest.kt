@@ -11,6 +11,7 @@ import com.valdesekamdem.taskflow.core.navigation.fakes.FakeNavigator
 import com.valdesekamdem.taskflow.feature.home.fixtures.HomeFixtures
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.OverdueSectionCaptionClicked
 import com.valdesekamdem.taskflow.feature.home.viewmodel.HomeUiEvent.TodaySectionCaptionClicked
+import com.valdesekamdem.taskflow.feature.settings.data.fakes.FakeSettingsRepository
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.DateFilter
 import com.valdesekamdem.taskflow.feature.task.data.api.filter.TaskFilter
 import com.valdesekamdem.taskflow.feature.task.data.fakes.FakeTaskRepository
@@ -34,10 +35,12 @@ class HomeViewModelTest {
     private val taskRepository = FakeTaskRepository()
     private val clock = FakeClock()
     private val zoneId = ZoneId.of("America/Toronto")
+    private val settingsRepository = FakeSettingsRepository()
 
     private fun createViewModel() = HomeViewModel(
         navigator = navigator,
         taskRepository = taskRepository,
+        settingsRepository = settingsRepository,
         clock = clock,
         zoneId = zoneId,
     )
@@ -45,7 +48,30 @@ class HomeViewModelTest {
     @Test
     fun `uiState initializes todayDate from injected clock`() = runTest {
         createViewModel().test {
-            assertEquals(HomeUiState(todayDate = "January 01", maxVisibleTasks = 2), uiState.value)
+            assertEquals(
+                HomeUiState(
+                    todayDate = "January 01",
+                    title = "",
+                    maxVisibleTasks = 2
+                ), uiState.value
+            )
+        }
+    }
+
+    @Test
+    fun `uiState title has username with the right greeting noun`() = runTest {
+        createViewModel().uiState.test {
+            assertEquals(
+                HomeUiState(
+                    todayDate = "January 01",
+                    title = "",
+                    maxVisibleTasks = 2
+                ), awaitItem()
+            )
+
+            settingsRepository.emitUserName("Valdese")
+
+            assertEquals("Morning, Valdese.", awaitItem().title)
         }
     }
 
@@ -107,13 +133,22 @@ class HomeViewModelTest {
         )
 
         createViewModel().uiState.test {
-            assertEquals(HomeUiState(todayDate = "January 01", maxVisibleTasks = 2), awaitItem())
+            assertEquals(
+                HomeUiState(
+                    todayDate = "January 01",
+                    title = "",
+                    maxVisibleTasks = 2
+                ), awaitItem()
+            )
+
+            skipItem("Title update")
 
             taskRepository.filteredTasks.emit(listOf(task))
 
             assertEquals(
                 HomeUiState(
                     todayDate = "January 01",
+                    title = "Morning,",
                     overdueTasks = listOf(expectedTaskUiModel),
                     todayTasks = listOf(expectedTaskUiModel),
                     maxVisibleTasks = 2,

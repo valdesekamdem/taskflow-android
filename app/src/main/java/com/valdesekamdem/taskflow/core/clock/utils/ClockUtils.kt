@@ -45,3 +45,6 @@ fun Instant.atStartOfDay(zoneId: ZoneId): Instant {
         .toInstant()
         .toKotlinInstant()
 }
+
+fun Instant.isMorning(zoneId: ZoneId): Boolean =
+    this.toJavaInstant().atZone(zoneId).toLocalTime().hour < 12

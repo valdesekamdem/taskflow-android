@@ -49,7 +49,7 @@ fun Home(
         topBar = {
             MainTopAppBar(
                 surtitle = uiState.todayDate,
-                title = stringResource(R.string.home_title),
+                title = uiState.title,
                 actions = {
                     // TODO(valdese): Replace this with avatar component
                     Box(
